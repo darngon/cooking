@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Cooking</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<button onclick="const h = document.getElementById('foodList').style.height; document.getElementById('foodList').style.height = h !== '50vh' ? '50vh' : '0'; document.getElementById('foodList').style.opacity = document.getElementById('foodList').style.opacity !== '1' ? '1' : '0';">Grab Food</button>
+<div id="items"></div>
+<fieldset id="recipeMaker">
+    <legend>Meal Maker</legend>
+</fieldset>
+<div id="foodList" style="height: 0; opacity: 0;"><p>hi</p></div>
+<script src="recipes.js"></script>
+<script src="food.js"></script>
+</body>
+</html>
