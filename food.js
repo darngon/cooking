@@ -300,7 +300,7 @@ setInterval(() => {
     for (const i in items) {
         if (items[i].location !== "recipeMaker") {
             items[i].age++;
-            output += `<fieldset class="food"><legend>${items[i].custom ? items[i].id : foods[items[i].id].name}</legend><p>${Math.round(items[i].temp).toLocaleString()}°F</p><p>${Math.round(items[i].cooked).toLocaleString()}% Cooked</p><p>${items[i].group === undefined ? items[i].format() : ""}</p><button onmousedown="items.splice(${i}, 1);">Throw Away</button><button onmousedown="items[${i}].serve();">Serve</button><button onmousedown="items[${i}].location = 'recipeMaker';">Move to Recipe Maker</button>`;
+            output += `<fieldset class="food"><legend>${items[i].custom ? items[i].id : foods[items[i].id].name}</legend><p>${Math.round(items[i].temp).toLocaleString()}°F</p><p>${Math.round(items[i].cooked).toLocaleString()}% Cooked</p><p>${items[i].group !== "liquid" ? items[i].format() : ""}</p><button onmousedown="items.splice(${i}, 1);">Throw Away</button><button onmousedown="items[${i}].serve();">Serve</button><button onmousedown="items[${i}].location = 'recipeMaker';">Move to Recipe Maker</button>`;
             if (items[i].location !== "counter") {
                 output += `<br><button onmousedown="items[${i}].location = 'counter'">Move to Counter</button>`;
             }
@@ -347,7 +347,7 @@ setInterval(() => {
             if (!exists) {
                 ingredients.push({id: items[i].id, count: 1, cookSpeed: items[i].cookSpeed, cooked: items[i].cooked});
             }
-            output2 += `<fieldset class="food"><legend>${items[i].custom ? items[i].id : foods[items[i].id].name}</legend><p>${Math.round(items[i].temp).toLocaleString()}°F</p><p>${Math.round(items[i].cooked).toLocaleString()}% Cooked</p><p>${items[i].group === undefined ? items[i].format() : ""}</p><button onmousedown="items.splice(${i}, 1);">Throw Away</button><button onmousedown="items[${i}].serve();">Serve</button><button onmousedown="items[${i}].location = 'counter';">Move to Counter</button></fieldset>`;
+            output2 += `<fieldset class="food"><legend>${items[i].custom ? items[i].id : foods[items[i].id].name}</legend><p>${Math.round(items[i].temp).toLocaleString()}°F</p><p>${Math.round(items[i].cooked).toLocaleString()}% Cooked</p><p>${items[i].group !== "liquid" ? items[i].format() : ""}</p><button onmousedown="items.splice(${i}, 1);">Throw Away</button><button onmousedown="items[${i}].serve();">Serve</button><button onmousedown="items[${i}].location = 'counter';">Move to Counter</button></fieldset>`;
         }
         if (items[i].gone) {
             items.splice(Number(i), 1);
