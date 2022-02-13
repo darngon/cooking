@@ -14,6 +14,10 @@ let recipes = [
                 count: 1
             },
             {
+                id: "lettuce",
+                count: 1
+            },
+            {
                 id: "bacon",
                 count: 1
             },
@@ -28,7 +32,10 @@ let recipes = [
         ],
         output: {
             name: "Hamburger",
-            count: 1
+            count: 1,
         }
+    },
+    {
+        ingredients: []
     }
 ];

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" oncontextmenu="return false;" onmouseout="hideTooltip();" ondragstart="return false;">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -9,12 +9,41 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<button onclick="const h = document.getElementById('foodList').style.height; document.getElementById('foodList').style.height = h !== '50vh' ? '50vh' : '0'; document.getElementById('foodList').style.opacity = document.getElementById('foodList').style.opacity !== '1' ? '1' : '0';">Grab Food</button>
+<button onmousedown="toggleFoodList();">Grab Food</button>
+<div id="stations">
+    <img alt="Table" src="img/counter.png" id="counter" onmousemove="debug.tooltips.counter();"
+         onmousedown="items[debug.selectedItem].location = 'counter'; debug.selectedItem = -1;">
+    <img id="oven" alt="Oven" src="img/oven.png" style="right: 0;" class="station"
+         onmousemove="debug.tooltips.oven();" onmouseout="hideTooltip();"
+         onmousedown="if (debug.locations.oven < 3) items[debug.selectedItem].location = 'oven'; else alert('Your oven is full!'); debug.selectedItem = -1;">
+    <img id="fridge" alt="Fridge" src="img/fridge.png" class="station" style="left: 0; z-index: -3;"
+         onmousemove="debug.tooltips.fridge();" onmouseout="hideTooltip();"
+         onmousedown="if (debug.locations.fridge < 4) items[debug.selectedItem].location = 'fridge'; else alert('Your fridge is full!'); debug.selectedItem = -1;">
+    <img id="sun" alt="Sun" src="img/sun.png" style="right: 0; top: 128px; z-index: -1;" class="station"
+         onmousemove="debug.tooltips.sun();" onmouseout="hideTooltip();"
+         onmousedown="if (debug.locations.sun < 4) items[debug.selectedItem].location = 'sun'; else alert('The sun is somehow full'); debug.selectedItem = -1;">
+    <img id="freezer" alt="Freezer" src="img/freezer.png" style="right: 128px;" class="station"
+         onmousemove="debug.tooltips.freezer();" onmouseout="hideTooltip();"
+         onmousedown="if (debug.locations.freezer < 4) items[debug.selectedItem].location = 'freezer'; else alert('Your freezer is full!'); debug.selectedItem = -1;">
+    <img id="accelerator" alt="Accelerator" src="img/accelerator-inactive.png" style="right: 256px; z-index: -1;"
+         class="station" onmousemove="debug.tooltips.accelerator();" onmouseout="hideTooltip();"
+         onmousedown="if (debug.locations.particleAccelerator < 1) items[debug.selectedItem].location = 'particleAccelerator'; else alert('The particle accelerator can only hold one item!'); debug.selectedItem = -1;">
+    <img id="decelerator" alt="Decelerator" src="img/decelerator-inactive.png" style="right: 384px; z-index: -1;"
+         class="station" onmousemove="debug.tooltips.decelerator();" onmouseout="hideTooltip();"
+         onmousedown="if (debug.locations.particleDecelerator < 1) items[debug.selectedItem].location = 'particleDecelerator'; else alert('The particle decelerator can only hold one item!'); debug.selectedItem = -1;">
+    <img id="mortar" alt="Mortar" src="img/mortar.png" style="right: 512px;" class="station"
+         onmousemove="debug.tooltips.mortar();" onmouseout="hideTooltip();">
+</div>
 <div id="items"></div>
-<fieldset id="recipeMaker">
-    <legend>Meal Maker</legend>
+<fieldset id="recipeMaker" style="display: none;">
+    <legend>Plate</legend>
 </fieldset>
 <div id="foodList" style="height: 0; opacity: 0;"><p>hi</p></div>
+<div id="tooltip"
+     style="position: absolute; width: 256px; height: 192px; background: #80808080; display: none; border-radius: 20px; pointer-events: none; z-index: 2;"></div>
+<div id="debug" style="display: none;">
+    <div id="debugCheckImg"></div>
+</div>
 <script src="recipes.js"></script>
 <script src="food.js"></script>
 </body>

@@ -5,6 +5,7 @@ body {
     color: white;
     background: #203;
     text-align: center;
+    user-select: none;
 }
 
 button {
@@ -22,12 +23,12 @@ button:hover {
 }
 
 .food {
-    display: inline;
-    width: 22.5%;
+    display: inline-block;
+    width: 20vw;
     text-align: center;
 }
 
-#foodList {
+#foodList, .foodList {
     border-radius: 20px;
     position: absolute;
     top: 24px;
@@ -50,6 +51,32 @@ fieldset {
     border-style: solid;
 }
 
-::-webkit-scrollbar {
-    display: none;
+img {
+    image-rendering: pixelated;
+}
+
+.backBtn {
+    cursor: pointer;
+    position: fixed;
+    top: 36px;
+    left: 20px;
+    width: 28px;
+    height: 28px;
+}
+
+.station {
+    width: 128px;
+    position: absolute;
+    bottom: 0;
+    z-index: 1;
+}
+
+#counter {
+    top: 50%;
+    left: 50%;
+    position: absolute;
+    width: 256px;
+    height: 256px;
+    margin-left: -128px;
+    margin-top: -128px;
 }
