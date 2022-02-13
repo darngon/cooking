@@ -1,146 +1,135 @@
 let items = [];
 let foods = {
-    almond: {name: "Almond", group: "Nuts", imgAvailable: true},
-    anchovy: {name: "Anchovy", group: "Seafood"},
-    apple: {name: "Apple", group: "Fruits", weight: 200},
-    asparagus: {name: "Asparagus", group: "Vegetables", weight: 20},
-    avocado: {name: "Avocado", group: "Fruits"},
-    bacon: {name: "Bacon", group: "Protein", weight: 20},
-    banana: {name: "Banana", group: "Fruits"},
-    basil: {name: "Basil Leaf", group: "Herbs / Spices", weight: 1},
-    bay: {name: "Bay Leaf", group: "Herbs / Spices", weight: 1},
-    beefChuck: {name: "Beef Chuck", group: "Protein", weight: 1000},
-    beetroot: {name: "Beetroot", group: "Vegetables"},
-    blackberry: {name: "Blackberry", group: "Fruits"},
-    blackPepper: {name: "Black Pepper", group: "Herbs / Spices"},
-    blueberry: {name: "Blueberry", group: "Fruits"},
-    bread: {name: "Bread", group: "Grains", cookSpeed: 10},
-    broccoli: {name: "Broccoli", group: "Vegetables"},
-    brusselsSprouts: {name: "Brussels Sprouts", group: "Vegetables"},
-    burgerBun: {name: "Burger Bun", group: "Grains", weight: 80, cookSpeed: 5},
-    burgerPatty: {name: "Burger Patty", group: "Protein", weight: 500},
-    buttonMushroom: {name: "Button Mushroom", group: "Vegetables"},
-    cabbage: {name: "Cabbage", group: "Vegetables"},
-    cantaloupe: {name: "Cantaloupe", group: "Fruits"},
-    carrot: {name: "Carrot", group: "Vegetables"},
-    cashew: {name: "Cashew", group: "Nuts"},
-    caviar: {name: "Caviar", group: "Seafood"},
-    cheddar: {name: "Cheddar Cheese", group: "Dairy"},
-    cherry: {name: "Cherry", group: "Fruits"},
-    chickenBreast: {name: "Chicken Breast", group: "Protein"},
-    chickenLeg: {name: "Chicken Leg", group: "Protein"},
-    chickenWing: {name: "Chicken Wing", group: "Protein"},
-    chiliPepper: {name: "Chili Pepper", group: "Peppers"},
-    chives: {name: "Chives", group: "Herbs / Spices"},
-    cilantro: {name: "Cilantro Leaves", group: "Herbs / Spices", weight: 1},
-    cinnamonStick: {name: "Cinnamon Stick", group: "Herbs / Spices"},
-    cocoa: {name: "Cocoa Bean", group: "Vegetables"},
-    coconut: {name: "Coconut", group: "Fruits"},
-    cod: {name: "Cod", group: "Seafood"},
-    cornCob: {name: "Corn Cob", group: "Vegetables"},
-    cucumber: {name: "Cucumber", group: "Vegetables"},
-    dill: {name: "Dill", group: "Herbs / Spices", weight: 1},
-    duckBreast: {name: "Duck Breast", group: "Protein"},
-    durian: {name: "Durian", group: "Fruits", weight: 2000},
-    egg: {name: "Egg", group: "Protein"},
-    eggplant: {name: "Eggplant", group: "Fruits"},
-    englishMuffin: {name: "English Muffin", group: "Grains"},
-    feta: {name: "Feta Cheese", group: "Dairy"},
-    fig: {name: "Fig", group: "Fruits"},
-    fusilli: {name: "Fusilli Noodles", group: "Pasta"},
-    garlic: {name: "Garlic", group: "Herbs / Spices", weight: 5},
-    ginger: {name: "Ginger", group: "Herbs / Spices"},
-    goatCheese: {name: "Goat Cheese", group: "Dairy"},
-    gorgonzola: {name: "Gorgonzola Cheese", group: "Dairy"},
-    grape: {name: "Grape", group: "Fruits", weight: 15},
-    greenBellPepper: {name: "Green Bell Pepper", group: "Peppers"},
-    guava: {name: "Guava", group: "Fruits"},
-    habanero: {name: "Habañero", group: "Peppers"},
-    ham: {name: "Ham", group: "Protein", weight: 500},
-    honeydew: {name: "Honeydew", group: "Fruits"},
-    horseradish: {name: "Horseradish", group: "Herbs / Spices"},
-    jalapeno: {name: "Jalapeño", group: "Peppers"},
-    lambChop: {name: "Lamb Chop", group: "Protein"},
-    lasagna: {name: "Lasagna Noodles", group: "Pasta"},
-    lemon: {name: "Lemon", group: "Fruits"},
-    lettuce: {name: "Lettuce", group: "Vegetables"},
-    lime: {name: "Lime", group: "Fruits"},
-    lobster: {name: "Lobster", group: "Seafood"},
-    mango: {name: "Mango", group: "Fruits"},
-    mint: {name: "Mint Leaf", group: "Herbs / Spices", weight: 1},
-    mozzarella: {name: "Mozzarella Cheese", group: "Dairy"},
-    onion: {name: "Onion", group: "Vegetables"},
-    orange: {name: "Orange", group: "Fruits"},
-    oregano: {name: "Oregano", group: "Herbs / Spices", weight: 1},
-    oyster: {name: "Oyster", group: "Seafood"},
-    pancetta: {name: "Pancetta", group: "Protein"},
-    parmesan: {name: "Parmesan Cheese", group: "Dairy"},
-    parsley: {name: "Parsley Leaves", group: "Herbs / Spices", weight: 1},
-    parsleyRoot: {name: "Parsley Root", group: "Herbs / Spices"},
-    parsnip: {name: "Parsnip", group: "Vegetables"},
-    peach: {name: "Peach", group: "Fruits"},
-    peanut: {name: "Peanut", group: "Nuts"},
-    pear: {name: "Pear", group: "Fruits"},
-    pecan: {name: "Pecan", group: "Nuts"},
-    penne: {name: "Penne Noodles", group: "Pasta"},
-    persimmon: {name: "Persimmon", group: "Fruits"},
-    pineapple: {name: "Pineapple", group: "Fruits"},
-    porkSausage: {name: "Pork Sausage", group: "Protein"},
-    porkChop: {name: "Pork Chop", group: "Protein"},
-    porkShoulder: {name: "Pork Shoulder", group: "Protein"},
-    porkTenderloin: {name: "Pork Tenderloin", group: "Protein"},
-    potatoDumplings: {name: "Potato Dumplings", group: "Other"},
-    potato: {name: "Potato", group: "Vegetables", weight: 200},
-    pufferfish: {name: "Pufferfish", group: "Seafood"},
-    pumpkin: {name: "Pumpkin", group: "Vegetables", weight: 5000},
-    radish: {name: "Radish", group: "Vegetables"},
-    rambutan: {name: "Rambutan", group: "Fruits"},
-    raspberry: {name: "Raspberry", group: "Fruits"},
-    redBellPepper: {name: "Red Bell Pepper", group: "Peppers"},
-    redCabbage: {name: "Red Cabbage", group: "Vegetables"},
-    redPepper: {name: "Red Pepper", group: "Herbs / Spices"},
-    redPotato: {name: "Red Potato", group: "Vegetables"},
-    rosemary: {name: "Rosemary", group: "Herbs / Spices"},
-    sage: {name: "Sage Leaf", group: "Herbs / Spices", weight: 1},
-    salmon: {name: "Salmon", group: "Seafood"},
-    salt: {name: "Salt", group: "Herbs / Spices", weight: 500, unavailable: true},
-    saltCrystal: {
-        name: "Salt Crystal", group: "Herbs / Spices", functions: [{
-            name: "Grind",
-            func: id => {
-                items[id].gone = true;
-                items.push(new food("salt"));
-            }
-        }]
-    },
-    sausage: {name: "Sausage", group: "Protein"},
-    scallion: {name: "Scallion", group: "Vegetables"},
-    scallop: {name: "Scallop", group: "Seafood"},
-    serrano: {name: "Serrano Pepper", group: "Peppers"},
-    shrimp: {name: "Shrimp", group: "Seafood"},
-    spaghetti: {name: "Spaghetti Noodles", group: "Pasta"},
-    starAnise: {name: "Star Anise", group: "Herbs / Spices"},
-    steak: {name: "Steak", group: "Protein"},
-    strawberry: {name: "Strawberry", group: "Fruits"},
-    swordfish: {name: "Swordfish", group: "Seafood"},
-    tBoneSteak: {name: "T-Bone Steak", group: "Protein"},
-    thyme: {name: "Thyme", group: "Herbs / Spices"},
-    tomato: {name: "Tomato", group: "Fruits"},
-    tortellini: {name: "Tortellini", group: "Pasta"},
-    tortilla: {name: "Tortilla", group: "Grains"},
-    trout: {name: "Trout", group: "Seafood"},
-    tuna: {name: "Tuna", group: "Seafood"},
-    walnut: {name: "Walnut", group: "Nuts"},
-    watermelon: {name: "Watermelon", group: "Fruits", weight: 3000},
-    yakCheese: {name: "Yak Cheese", group: "Dairy"},
-    yellowBellPepper: {name: "Yellow Bell Pepper", group: "Peppers"},
-    zucchini: {name: "Zucchini", group: "Vegetables"},
+    almond: {name: "Almond", group: "Nuts", mass: 1.5, imgAvailable: true},
+    anchovy: {name: "Anchovy", group: "Seafood", mass: 40},
+    apple: {name: "Apple", group: "Fruits", mass: 200},
+    asparagus: {name: "Asparagus", group: "Vegetables", mass: 20},
+    avocado: {name: "Avocado", group: "Fruits", mass: 150},
+    bacon: {name: "Bacon", group: "Protein", mass: 20},
+    banana: {name: "Banana", group: "Fruits", mass: 120},
+    basil: {name: "Basil Leaf", group: "Herbs / Spices", mass: 1},
+    bay: {name: "Bay Leaf", group: "Herbs / Spices", mass: 1},
+    beefChuck: {name: "Beef Chuck", group: "Protein", mass: 1000},
+    beetroot: {name: "Beetroot", group: "Vegetables", mass: 200},
+    blackberry: {name: "Blackberry", group: "Fruits", mass: 7},
+    blackPepper: {name: "Black Pepper", group: "Herbs / Spices", mass: 500},
+    blueberry: {name: "Blueberry", group: "Fruits", mass: 0.5},
+    bread: {name: "Bread", group: "Grains", mass: 400, cookSpeed: 10},
+    broccoli: {name: "Broccoli", group: "Vegetables", mass: 250},
+    brusselsSprouts: {name: "Brussels Sprouts", group: "Vegetables", mass: 10},
+    burgerBun: {name: "Burger Bun", group: "Grains", mass: 60, cookSpeed: 5},
+    burgerPatty: {name: "Burger Patty", group: "Protein", mass: 140},
+    buttonMushroom: {name: "Button Mushroom", group: "Vegetables", mass: 40},
+    cabbage: {name: "Cabbage", group: "Vegetables", mass: 750},
+    cantaloupe: {name: "Cantaloupe", group: "Fruits", mass: 1500},
+    carrot: {name: "Carrot", group: "Vegetables", mass: 65},
+    cashew: {name: "Cashew", group: "Nuts", mass: 1.5},
+    cheddar: {name: "Cheddar Cheese", group: "Dairy", mass: 250},
+    cherry: {name: "Cherry", group: "Fruits", mass: 10},
+    chickenBreast: {name: "Chicken Breast", group: "Protein", mass: 175},
+    chickenLeg: {name: "Chicken Leg", group: "Protein", mass: 200},
+    chickenWing: {name: "Chicken Wing", group: "Protein", mass: 100},
+    chiliPepper: {name: "Chili Pepper", group: "Peppers", mass: 20},
+    chives: {name: "Chives", group: "Herbs / Spices", mass: 1},
+    cilantro: {name: "Cilantro Leaves", group: "Herbs / Spices", mass: 1},
+    cinnamonStick: {name: "Cinnamon Stick", group: "Herbs / Spices", mass: 2},
+    cocoa: {name: "Cocoa Bean", group: "Sweets", mass: 40},
+    coconut: {name: "Coconut", group: "Fruits", mass: 750},
+    cod: {name: "Cod", group: "Seafood", mass: 1000},
+    cornCob: {name: "Corn Cob", group: "Vegetables", mass: 200},
+    cucumber: {name: "Cucumber", group: "Vegetables", mass: 350},
+    dill: {name: "Dill", group: "Herbs / Spices", mass: 1},
+    duckBreast: {name: "Duck Breast", group: "Protein", mass: 400},
+    durian: {name: "Durian", group: "Fruits", mass: 2000},
+    egg: {name: "Egg", group: "Protein", mass: 60},
+    eggplant: {name: "Eggplant", group: "Fruits", mass: 550},
+    englishMuffin: {name: "English Muffin", group: "Grains", mass: 60},
+    feta: {name: "Feta Cheese", group: "Dairy", mass: 250},
+    fig: {name: "Fig", group: "Fruits", mass: 40},
+    fusilli: {name: "Fusilli Noodles", group: "Pasta", mass: 1},
+    garlic: {name: "Garlic", group: "Herbs / Spices", mass: 5},
+    ginger: {name: "Ginger", group: "Herbs / Spices", mass: 200},
+    goatCheese: {name: "Goat Cheese", group: "Dairy", mass: 250},
+    gorgonzola: {name: "Gorgonzola Cheese", group: "Dairy", mass: 250},
+    grape: {name: "Grape", group: "Fruits", mass: 7},
+    greenBellPepper: {name: "Green Bell Pepper", group: "Peppers", mass: 150},
+    guava: {name: "Guava", group: "Fruits", mass: 55},
+    habanero: {name: "Habañero", group: "Peppers", mass: 55},
+    ham: {name: "Ham", group: "Protein", mass: 500},
+    honeydew: {name: "Honeydew", group: "Fruits", mass: 2500},
+    horseradish: {name: "Horseradish", group: "Herbs / Spices", mass: 2000},
+    jalapeno: {name: "Jalapeño", group: "Peppers", mass: 20},
+    lambChop: {name: "Lamb Chop", group: "Protein", mass: 100},
+    lasagna: {name: "Lasagna Noodles", group: "Pasta", mass: 10},
+    lemon: {name: "Lemon", group: "Fruits", mass: 70},
+    lettuce: {name: "Lettuce", group: "Vegetables", mass: 300},
+    lime: {name: "Lime", group: "Fruits", mass: 70},
+    lobster: {name: "Lobster", group: "Seafood", mass: 2000},
+    mango: {name: "Mango", group: "Fruits", mass: 200},
+    mint: {name: "Mint Leaf", group: "Herbs / Spices", mass: 1},
+    mozzarella: {name: "Mozzarella Cheese", group: "Dairy", mass: 250},
+    onion: {name: "Onion", group: "Vegetables", mass: 120},
+    orange: {name: "Orange", group: "Fruits", mass: 150},
+    oregano: {name: "Oregano", group: "Herbs / Spices", mass: 1},
+    oyster: {name: "Oyster", group: "Seafood", mass: 45},
+    pancetta: {name: "Pancetta", group: "Protein", mass: 350},
+    parmesan: {name: "Parmesan Cheese", group: "Dairy", mass: 250},
+    parsley: {name: "Parsley Leaves", group: "Herbs / Spices", mass: 1},
+    parsleyRoot: {name: "Parsley Root", group: "Herbs / Spices", mass: 45},
+    parsnip: {name: "Parsnip", group: "Vegetables", mass: 115},
+    peach: {name: "Peach", group: "Fruits", mass: 150},
+    peanut: {name: "Peanut", group: "Nuts", mass: 0.8},
+    pear: {name: "Pear", group: "Fruits", mass: 180},
+    pecan: {name: "Pecan", group: "Nuts", mass: 1.8},
+    penne: {name: "Penne Noodles", group: "Pasta", mass: 1},
+    persimmon: {name: "Persimmon", group: "Fruits", mass: 170},
+    pineapple: {name: "Pineapple", group: "Fruits", mass: 1000},
+    porkSausage: {name: "Pork Sausage", group: "Protein", mass: 100},
+    porkChop: {name: "Pork Chop", group: "Protein", mass: 200},
+    porkShoulder: {name: "Pork Shoulder", group: "Protein", mass: 6500},
+    porkTenderloin: {name: "Pork Tenderloin", group: "Protein", mass: 2000},
+    potato: {name: "Potato", group: "Vegetables", mass: 200},
+    pumpkin: {name: "Pumpkin", group: "Vegetables", mass: 5000},
+    radish: {name: "Radish", group: "Vegetables", mass: 900},
+    rambutan: {name: "Rambutan", group: "Fruits", mass: 40},
+    raspberry: {name: "Raspberry", group: "Fruits", mass: 5},
+    redBellPepper: {name: "Red Bell Pepper", group: "Peppers", mass: 150},
+    redCabbage: {name: "Red Cabbage", group: "Vegetables", mass: 850},
+    redPepper: {name: "Red Pepper Flakes", group: "Herbs / Spices", mass: 500},
+    redPotato: {name: "Red Potato", group: "Vegetables", mass: 200},
+    rosemary: {name: "Rosemary", group: "Herbs / Spices", mass: 1},
+    sage: {name: "Sage Leaf", group: "Herbs / Spices", mass: 1},
+    salmon: {name: "Salmon", group: "Seafood", mass: 170},
+    salt: {name: "Salt", group: "Herbs / Spices", mass: 500, unavailable: true},
+    saltCrystal: {name: "Salt Crystal", group: "Herbs / Spices", mass: 500, grind: {id: "salt", mass: 500}},
+    sausage: {name: "Sausage", group: "Protein", mass: 100},
+    scallion: {name: "Scallion", group: "Vegetables", mass: 15},
+    scallop: {name: "Scallop", group: "Seafood", mass: 15},
+    serrano: {name: "Serrano Pepper", group: "Peppers", mass: 10},
+    shrimp: {name: "Shrimp", group: "Seafood", mass: 2},
+    spaghetti: {name: "Spaghetti Noodles", group: "Pasta", mass: 1},
+    starAnise: {name: "Star Anise", group: "Herbs / Spices", mass: 30},
+    steak: {name: "Steak", group: "Protein", mass: 225},
+    strawberry: {name: "Strawberry", group: "Fruits", mass: 12},
+    swordfish: {name: "Swordfish", group: "Seafood", mass: 3000},
+    tBoneSteak: {name: "T-Bone Steak", group: "Protein", mass: 425},
+    thyme: {name: "Thyme", group: "Herbs / Spices", mass: 1},
+    tomato: {name: "Tomato", group: "Fruits", mass: 170},
+    tortellini: {name: "Tortellini", group: "Pasta", mass: 5},
+    tortilla: {name: "Tortilla", group: "Grains", mass: 45},
+    trout: {name: "Trout", group: "Seafood", mass: 500},
+    tuna: {name: "Tuna", group: "Seafood", mass: 500},
+    walnut: {name: "Walnut", group: "Nuts", mass: 11},
+    watermelon: {name: "Watermelon", group: "Fruits", mass: 3000},
+    yakCheese: {name: "Yak Cheese", group: "Dairy", mass: 250},
+    yellowBellPepper: {name: "Yellow Bell Pepper", group: "Peppers", mass: 150},
+    zucchini: {name: "Zucchini", group: "Vegetables", mass: 200},
 
-    almondMilk: {name: "Almond Milk", group: "Liquids", defaultSize: 500},
-    coconutMilk: {name: "Coconut Milk", group: "Liquids", defaultSize: 500},
-    milk: {name: "Milk", group: "Liquids", defaultSize: 500},
-    vinegar: {name: "Vinegar", group: "Liquids", defaultSize: 1000},
-    water: {name: "Water", group: "Liquids", defaultSize: 1000},
+    almondMilk: {name: "Almond Milk", group: "Liquids", volume: 500},
+    coconutMilk: {name: "Coconut Milk", group: "Liquids", volume: 500},
+    milk: {name: "Milk", group: "Liquids", volume: 500},
+    vinegar: {name: "Vinegar", group: "Liquids", volume: 1000},
+    water: {name: "Water", group: "Liquids", volume: 1000},
 };
 let debug = {
     groups: {},
@@ -261,7 +250,7 @@ function reload() {
         foodList += `<div id="foodGroup_${j}"><h2 onmousedown="showGroup('none');" class="foodListItem">${j}</h2>`;
         for (let i of debug.groups[j]) {
             i = i.id;
-            foodList += `<p class="foodListItem" title="${foods[i].name}" onmousedown="if (debug.locations['counter'] < 20) items.push(new food('${i}')); else alert('Your table is full!'); document.getElementById('foodList').style.height = '0'; document.getElementById('foodList').style.opacity = '0';">${foods[i].name}</p>`;
+            foodList += `<p class="foodListItem" title="${foods[i].name}" onmousedown="if (debug.locations['counter'] < 20) items.push(new food('${i}', false, undefined, 0, foods.${i}.mass, foods.${i}.volume)); else alert('Your table is full!'); document.getElementById('foodList').style.height = '0'; document.getElementById('foodList').style.opacity = '0';">${foods[i].name}</p>`;
         }
         foodList += `</div>`;
     }
@@ -278,13 +267,15 @@ function showGroup(g) {
 }
 
 class food {
-    constructor(id, isCustom, cookSpeed, cooked) {
+    constructor(id, isCustom, cookSpeed, cooked, mass, volume) {
         this.id = id;
         this.custom = isCustom !== undefined ? isCustom : false;
         this.location = "counter";
         this.temp = 72;
         this.cooked = cooked !== undefined ? cooked : 0;
         this.age = 0;
+        this.mass = mass;
+        this.volume = volume;
         this.cookSpeed = cookSpeed;
         if (!this.custom) this.group = foods[id].group;
         if (!this.custom) this.cookSpeed = foods[id].cookSpeed !== undefined ? foods[id].cookSpeed : 1;
@@ -321,11 +312,11 @@ class food {
             return "Glowing White" + "+".repeat(this.temp / 3000 - 10 / 3);
         } else if (this.temp >= 7500) {
             this.hue = 60;
-            this.saturation = `${400 - this.temp / 25}%`;
-            this.value = `${(400 - this.temp / 25) / 2 + 50}%`;
+            this.saturation = `100%`;
+            this.value = `${100 - (400 - this.temp / 25) / 2}%`;
             return "Glowing Yellow" + "+".repeat(this.temp / 500 - 15);
         } else if (this.temp >= 5000) {
-            this.hue = this.temp / (2500 / 30) - 60;
+            this.hue = this.temp / (2500 / 30) - 30;
             this.saturation = "100%";
             this.value = "50%";
             return "Glowing Orange" + "+".repeat(this.temp / 500 - 10);
@@ -377,6 +368,15 @@ class food {
             temperatureAlert = `Customer was frozen to death because it was ${this.temp.toFixed(0)}°F.`;
         }
         alert(`${this.custom ? this.id : foods[this.id].name} served! Customer gives rating of ${this.rating} / 10. ${temperatureAlert}`);
+    }
+
+    grind() {
+        if (foods[this.id] !== undefined && foods[this.id].grind !== undefined) {
+            this.gone = true;
+            items.push(new food(foods[this.id].grind.id, false, this.cookSpeed, this.cooked, foods[this.id].grind.mass));
+        } else {
+            alert("You can't grind this!");
+        }
     }
 }
 
@@ -436,6 +436,7 @@ setInterval(() => {
         oven: 0,
         fridge: 0,
         sun: 0,
+        freezer: 0,
         particleAccelerator: 0,
         particleDecelerator: 0
     };
@@ -448,9 +449,6 @@ setInterval(() => {
             let top = 0;
             let width = 0;
             let height = 0;
-            if (foods[items[i].id] !== undefined) for (const j in foods[items[i].id].functions) {
-                output += `<br><button onmousedown="foods[items[${i}].id].functions[${j}].func(${i});">${foods[items[i].id].functions[j].name}</button>`;
-            }
             width = 32;
             height = 32;
             if (items[i].location === "counter") {
@@ -493,7 +491,7 @@ setInterval(() => {
             const v = items[i].value;
             let tempColor = `hsl(${h}, ${s}, ${v})`;
 
-            output += `<div class="food" id="foodIndex${i}" onmousedown="debug.selectedItem = debug.selectedItem !== ${i} ? ${i} : -1;" oncontextmenu="items.splice(${i}, 1); debug.selectedItem = -1; hideTooltip();" onmouseover="showTooltip('${items[i].custom ? items[i].id : foods[items[i].id].name}', '<p>${Math.round(items[i].temp).toLocaleString()}°F</p><p>${Math.round(items[i].cooked).toLocaleString()}% Cooked</p><p>${items[i].group !== "liquid" ? items[i].format() : ""}</p>');" onmouseout="hideTooltip();"><img style="${(foods[items[i].id].imgAvailable ? '' : 'border-width: 3px; border-style: solid; border-color: white; ')}position: absolute; left: ${left}px; top: ${top}px; filter: brightness(${100 - items[i].cooked / 2}%) drop-shadow(0 0 8px ${tempColor}); ${debug.selectedItem === Number(i) ? "background: #00000060" : ""};" src="img/food/${foods[items[i].id].imgAvailable ? items[i].id : "transparent"}.png" height="${height}" width="${width}" alt="${items[i].id}"></div>`;
+            output += `<div class="food" id="foodIndex${i}" onmousedown="debug.selectedItem = debug.selectedItem !== ${i} ? ${i} : -1;" oncontextmenu="items.splice(${i}, 1); debug.selectedItem = -1; hideTooltip();" onmouseover="showTooltip('${items[i].custom ? items[i].id : foods[items[i].id].name}', '<p>${Math.round(items[i].temp).toLocaleString()}°F</p><p>${Math.round(items[i].cooked).toLocaleString()}% Cooked</p><p>${items[i].group !== "liquid" ? items[i].format() : ""}</p>${items[i].mass !== undefined ? '<p>' + items[i].mass + 'g</p>' : ''}${items[i].volume !== undefined ? `<p>${items[i].volume}mL</p>` : ''}');" onmouseout="hideTooltip();"><img style="${(foods[items[i].id].imgAvailable ? '' : 'border-width: 3px; border-style: solid; border-color: white; ')}position: absolute; left: ${left}px; top: ${top}px; filter: brightness(${100 - items[i].cooked / 2}%) drop-shadow(0 0 8px ${tempColor}); ${debug.selectedItem === Number(i) ? "background: #00000060" : ""};" src="img/food/${foods[items[i].id].imgAvailable ? items[i].id : "transparent"}.png" height="${height}" width="${width}" alt="${items[i].id}"></div>`;
             document.getElementById("oven").src = debug.locations.oven > 0 ? "img/oven-on.png" : "img/oven.png";
             document.getElementById("oven").style.pointerEvents = debug.selectedItem > -1 ? "" : "none";
             document.getElementById("fridge").src = debug.locations.fridge > 0 ? "img/fridge-open.png" : "img/fridge.png";

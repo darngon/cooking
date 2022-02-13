@@ -33,7 +33,7 @@
          class="station" onmousemove="debug.tooltips.decelerator();" onmouseout="hideTooltip();"
          onmousedown="if (debug.locations.particleDecelerator < 1) items[debug.selectedItem].location = 'particleDecelerator'; else alert('The particle decelerator can only hold one item!'); debug.selectedItem = -1;">
     <img id="mortar" alt="Mortar" src="img/mortar.png" style="right: 512px;" class="station"
-         onmousemove="debug.tooltips.mortar();" onmouseout="hideTooltip();">
+         onmousemove="debug.tooltips.mortar();" onmouseout="hideTooltip();" onmousedown="items[debug.selectedItem].grind();">
 </div>
 <div id="items"></div>
 <fieldset id="recipeMaker" style="display: none;">
@@ -41,7 +41,7 @@
 </fieldset>
 <div id="foodList" style="height: 0; opacity: 0;"><p>hi</p></div>
 <div id="tooltip"
-     style="position: absolute; width: 256px; height: 192px; background: #80808080; display: none; border-radius: 20px; pointer-events: none; z-index: 2;"></div>
+     style="font-size: 75%; position: absolute; width: 256px; height: 192px; background: #80808080; display: none; border-radius: 20px; pointer-events: none; z-index: 2;"></div>
 <div id="debug" style="display: none;">
     <div id="debugCheckImg"></div>
 </div>
