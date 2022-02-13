@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+          content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Cooking</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+<div id="main">
 <button onmousedown="toggleFoodList();">Grab Food</button>
 <div id="stations">
     <img alt="Table" src="img/counter.png" id="counter" onmousemove="debug.tooltips.counter();"
@@ -43,6 +44,11 @@
      style="position: absolute; width: 256px; height: 192px; background: #80808080; display: none; border-radius: 20px; pointer-events: none; z-index: 2;"></div>
 <div id="debug" style="display: none;">
     <div id="debugCheckImg"></div>
+</div>
+</div>
+<div id="tooSmallAlert" style="display: none; text-align: center;">
+    <h1>Warning!</h1>
+    <p>Your screen is not wide enough! Try rotating your device or use a computer instead when you can.</p>
 </div>
 <script src="recipes.js"></script>
 <script src="food.js"></script>
