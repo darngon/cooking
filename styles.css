@@ -1,6 +1,20 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@500&display=swap');
 
+@media screen and (max-width: 878px) {
+    body {
+        zoom: 50%;
+    }
+}
+
+@media screen and (max-width: 439px) {
+    body {
+        zoom: 25%;
+    }
+}
+
 body {
+    overflow-x: hidden;
+    text-overflow: ellipsis;
     font-family: Nunito, sans-serif;
     color: white;
     background: #203;
@@ -37,12 +51,17 @@ button:hover {
     overflow-y: auto;
     width: fit-content;
     min-width: 240px;
-    transition: height 500ms, opacity 500ms;
+    transition: height 500ms, width 500ms, opacity 500ms, border-radius 500ms, margin-left 500ms, left 500ms, top 500ms, min-width 500ms;
     box-shadow: 0 0 20px 5px #c3f;
 }
 
 .foodListItem {
     cursor: pointer;
+    transition: color 250ms;
+}
+
+.foodListItem:hover {
+    color: #11d51d;
 }
 
 fieldset {
@@ -79,4 +98,19 @@ img {
     height: 256px;
     margin-left: -128px;
     margin-top: -128px;
+}
+
+#plate {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 256px;
+    height: 256px;
+    margin-left: -128px;
+    margin-top: -128px;
+}
+
+#kitchen {
+    left: 0;
+    transition: left 500ms, top 500ms;
 }

@@ -3,39 +3,59 @@ let recipes = [
         ingredients: [
             {
                 id: "cheddar",
-                count: 1
+                mass: 25
             },
             {
                 id: "tomato",
-                count: 1
+                mass: 25
             },
             {
                 id: "onion",
-                count: 1
+                mass: 25
             },
             {
                 id: "lettuce",
-                count: 1
+                mass: 25
             },
             {
                 id: "bacon",
-                count: 1
+                mass: 25
             },
             {
                 id: "burgerBun",
-                count: 2
+                mass: 120,
+                cooked: {
+                    min: 90,
+                    max: 110
+                }
             },
             {
-                id: "burgerMeat",
-                count: 1
+                id: "burgerPatty",
+                mass: 100,
+                cooked: {
+                    min: 90,
+                    max: 110
+                }
             }
         ],
         output: {
             name: "Hamburger",
-            count: 1,
+            cooked: 100
         }
     },
     {
-        ingredients: []
+        ingredients: [
+            {
+                id: "cabbage",
+                mass: 25,
+                cooked: {
+                    min: 20,
+                    max: 50
+                }
+            }
+        ],
+        output: {
+            name: "../plate"
+        }
     }
 ];
