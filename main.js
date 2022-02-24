@@ -1,6 +1,6 @@
 let items = [];
 let player = {
-    money: 100
+    money: 0
 };
 let debug = {
     isInKitchen: true,
@@ -71,6 +71,30 @@ let debug = {
         "unknownPowder"
     ]
 };
+let settings = {
+    background: "#203",
+    canMakeRecipes: true,
+    maxPaycheckValue: 150,
+    paycheckTime: 600,
+    textColor: "#fff",
+    tooltipsEnabled: true,
+    units: "imperial",
+    foodRottingSpeed: 1,
+    cookSpeed: 1,
+    minCookingTemperature: 120,
+    roomTemp: 72
+};
+
+function start() {
+    document.getElementById("startScreen").style.display = "none";
+    document.getElementById("game").style.display = "";
+}
+
+// settings.foods = foods;
+
+for (const s in settings) {
+    document.getElementById(s).setAttribute("onchange", `settings['${s}'] = this.value; updateSettings();`);
+}
 
 for (const i in animations) {
     setInterval(() => {
@@ -81,7 +105,23 @@ for (const i in animations) {
     }, 1000 / animations[i].fps);
 }
 
+function updateSettings() {
+    for (const s in settings) {
+        document.getElementById(s).value = settings[s];
+        if (document.getElementById(s).type === "checkbox") document.getElementById(s).checked = settings[s];
+    }
+    document.getElementById("settings").value = JSON.stringify(settings, null, 2);
+    /* foods = settings.foods;
+    settings.foods = foods; */
+    document.body.style.background = settings.background;
+    document.body.style.color = settings.textColor;
+}
+
 function makeRecipe(ingredients) {
+    if (!settings.canMakeRecipes) {
+        alert("Making recipes is disabled");
+        return;
+    }
     let ingredients2 = [];
     let name = "";
     let cookSpeed = 0;
@@ -119,38 +159,38 @@ function makeRecipe(ingredients) {
     cookSpeed /= ingredients.length;
     temp /= ingredients.length;
 
-    for (const r in recipes) {
+    for (const r of recipes) {
         let ingredients3 = [];
         let ingredients4 = [];
         let acceptable = true;
-        recipes[r].ingredients.sort((a, b) => {
+        r.ingredients.sort((a, b) => {
             const a1 = a.id.toUpperCase();
             const a2 = b.id.toUpperCase();
             return a1 < a2 ? -1 : a1 > a2 ? 1 : 0;
         });
         for (const k in ingredients2) {
             let a;
-            if (recipes[r].ingredients[k] === undefined) {
+            if (r.ingredients[k] === undefined) {
                 a = false;
                 break;
             } else {
-                a = Number(ingredients2[k].mass) === Number(recipes[r].ingredients[k].mass);
+                a = Number(ingredients2[k].mass) === Number(r.ingredients[k].mass);
             }
-            if (recipes[r].ingredients[k].cooked === undefined) recipes[r].ingredients[k].cooked = {
+            if (r.ingredients[k].cooked === undefined) r.ingredients[k].cooked = {
                 min: -Infinity,
                 max: Infinity
             };
-            if (recipes[r].ingredients[k].mass === undefined) a = true;
-            if (ingredients2[k].cooked < recipes[r].ingredients[k].cooked.min || ingredients2[k].cooked > recipes[r].ingredients[k].cooked.max || !a) {
+            if (r.ingredients[k].mass === undefined) a = true;
+            if (ingredients2[k].cooked < r.ingredients[k].cooked.min || ingredients2[k].cooked > r.ingredients[k].cooked.max || !a) {
                 acceptable = false;
             }
             ingredients3.push(ingredients2[k].id);
         }
-        for (const t in recipes[r].ingredients) {
-            ingredients4.push(recipes[r].ingredients[t].id);
+        for (const t in r.ingredients) {
+            ingredients4.push(r.ingredients[t].id);
         }
         if (ingredients4.join() === ingredients3.join() && acceptable) {
-            items.push(new food(recipes[r].output.name, 2, cookSpeed, cooked, mass, undefined, temp, recipes[r].output.name));
+            items.push(new food(r.output.name, 2, cookSpeed, cooked, mass, undefined, temp, r.output.name));
             return;
         }
     }
@@ -177,6 +217,7 @@ function toggleFoodList(close) {
         b.style.height = "480px";
         b.style.minWidth = "240px";
         b.style.borderRadius = "20px";
+        f.style.pointerEvents = "";
     } else {
         debug.foodListTimeout = setTimeout(() => {
             b.style.marginLeft = "-20px";
@@ -185,47 +226,47 @@ function toggleFoodList(close) {
             b.style.minWidth = "40px";
             b.style.borderRadius = "3px";
             b.style.pointerEvents = "";
+            f.style.pointerEvents = "none";
         }, 500);
     }
     debug.foodListTimeout2 = setTimeout(() => {
         f.style.opacity = f.style.opacity !== "1" ? "1" : "0";
     }, f.style.opacity !== "1" ? 500 : 0);
-    f.style.pointerEvents = f.style.pointerEvents !== "none" && !close ? "none" : "";
 }
 
 function buy(id) {
     const p = foods[id].price !== undefined ? foods[id].price : 5;
-    if (debug.locations['counter'] < 20) {
+    if (debug.locations["counter"] < 20) {
         if (player.money >= p) {
-            player.money -= p;
             debug.selectedItem = items.length;
             items.push(new food(id, false, undefined, 0, foods[id].mass, foods[id].volume));
-            debug.recentTransactions.unshift(`<p style="color: red;">${foods[id].name} | $-${format("money", p)}</p>`);
-            document.getElementById("recentTransactions").innerHTML = debug.recentTransactions.join("");
+            addMoney(-p, foods[id].name);
         }
     } else {
-        alert('Your table is full!');
+        alert("Your table is full!");
     }
     toggleFoodList(true);
 }
 
 function reload() {
+    updateSettings();
     let debugImgOutput = "";
     for (const f in foods) debugImgOutput += `<img alt="${f}" src='img/food/${f}.png' onload="if (foods['${f}'] === undefined) foods.${f} = {}; foods.${f}.imgAvailable = true;">`;
     for (const f of debug.otherFoodTextures) debugImgOutput += `<img alt="${f}" src='img/food/${f}.png' onload="if (foods['${f}'] === undefined) foods.${f} = {}; foods.${f}.imgAvailable = true;">`;
     document.getElementById("debugCheckImg").innerHTML = debugImgOutput;
     let foodList = `<img alt='Back' class='backBtn' onmousedown='if (debug.foodListLocation !== "none") showGroup("none"); else toggleFoodList();' src='img/back.png'><div id='foodGroupList'>`;
+    debug.groups = {};
     for (const i in foods) {
         if (debug.groups[foods[i].group] === undefined && !foods[i].unavailable) debug.groups[foods[i].group] = [];
-        if (!foods[i].unavailable) debug.groups[foods[i].group].push({name: foods[i].name, id: i});
+        let exists = false;
+        for (const g of debug.groups[foods[i].group]) if (g.id === foods[i].id) exists = true;
+        if (!foods[i].unavailable && !exists) debug.groups[foods[i].group].push({name: foods[i].name, id: i});
     }
 
     const groupList = Object.keys(debug.groups);
     groupList.sort();
 
-    for (const g of groupList) {
-        foodList += `<h2 onmousedown="showGroup('${g}')" class="foodListItem">${g}</h2>`
-    }
+    for (const g of groupList) foodList += `<h2 onmousedown="showGroup('${g}')" class="foodListItem">${g}</h2>`;
     foodList += "</div>";
 
     for (const j of groupList) {
@@ -254,7 +295,7 @@ class food {
         this.custom = isCustom !== undefined ? isCustom : false;
         this.name = this.custom ? name : foods[this.id].name;
         this.location = "counter";
-        this.temp = temp !== undefined ? temp : 72;
+        this.temp = temp !== undefined ? temp : settings.roomTemp;
         this.cooked = cooked !== undefined ? cooked : 0;
         this.dateOfCreation = Date.now() / 1000;
         this.mass = mass;
@@ -263,10 +304,10 @@ class food {
         if (!this.custom) this.group = foods[id].group;
         if (!this.custom) this.cookSpeed = foods[id].cookSpeed !== undefined ? foods[id].cookSpeed : 1;
         setInterval(() => {
-            this.age = Date.now() / 1000 - this.dateOfCreation;
-            this.temp = (this.temp - 72) * 0.9999 + 72;
+            this.age = (Date.now() / 1000 - this.dateOfCreation) * settings.foodRottingSpeed;
+            this.temp = (this.temp - settings.roomTemp) * 0.9999 + settings.roomTemp;
             if (this.temp < -459) this.temp = -459;
-            this.cooked += this.temp - 120 > 0 ? (this.temp - 120) / (3000 / this.cookSpeed) : 0;
+            this.cooked += (this.temp - settings.minCookingTemperature > 0 ? (this.temp - settings.minCookingTemperature) / (3000 / this.cookSpeed) : 0) * settings.cookSpeed;
             if (this.mass < 0.001 && this.mass > 0) this.gone = true;
             if (this.volume < 0.001 && this.volume > 0) this.gone = true;
         }, 20);
@@ -394,34 +435,61 @@ class food {
 
 function format(type, value) {
     if (type === "mass") {
-        if (Math.abs(value) >= 1000) {
-            return `${(value / 1000).toLocaleString(undefined, {maximumFractionDigits: 2})} kg`;
-        } else if (Math.abs(value) >= 1) {
-            return `${~~(value * 100) / 100} g`;
-        } else {
-            return `${~~(value * 100000) / 100} mg`;
+        if (settings.units === "metric") {
+            if (Math.abs(value) >= 1000) {
+                return `${toNumberName(value / 1000, true, 2)} kg`;
+            } else if (Math.abs(value) >= 1) {
+                return `${~~(value * 100) / 100} g`;
+            } else {
+                return `${~~(value * 100000) / 100} mg`;
+            }
+        } else if (settings.units === "imperial") {
+            if (Math.abs(value) >= 4.41e6) {
+                return `${toNumberName(value / 4.41e6, true, 2)} t`;
+            } else if (Math.abs(value) >= 2205) {
+                return `${toNumberName(value / 2205, true, 2)} lb`;
+            } else if (Math.abs(value) >= 1.378125) {
+                return `${(value / 137.8125).toFixed(2)} oz`;
+            } else {
+                return `${format("number", value / 137.8125)} oz`;
+            }
         }
     } else if (type === "volume") {
-        if (Math.abs(value) >= 1000) {
-            return `${(value / 1000).toLocaleString(undefined, {maximumFractionDigits: 2})} L`;
-        } else if (Math.abs(value) >= 1) {
-            return `${~~(value * 100) / 100} mL`;
-        } else {
-            return `${~~(value * 100000) / 100} μL`;
+        if (settings.units === "metric") {
+            if (Math.abs(value) >= 1000) {
+                return `${(value / 1000).toLocaleString(undefined, {maximumFractionDigits: 2})} L`;
+            } else if (Math.abs(value) >= 1) {
+                return `${~~(value * 100) / 100} mL`;
+            } else {
+                return `${~~(value * 100000) / 100} μL`;
+            }
+        } else if (settings.units === "imperial") {
+            value *= 0.033814;
+            if (Math.abs(value) >= 128) {
+                return `${toNumberName(value / 128, true, 2)} gal`;
+            } else if (Math.abs(value) >= 32) {
+                return `${toNumberName(value / 32, true, 2)} qt`;
+            } else if (Math.abs(value) >= 8) {
+                return `${toNumberName(value / 8, true, 2)} cups`;
+            } else if (Math.abs(value) >= 0.01) {
+                return `${toNumberName(value, true, 2)} fl. oz`;
+            } else {
+                return `${format("number", value)} fl. oz`;
+            }
         }
     } else if (type === "number") {
         if (Math.abs(value) === Infinity) {
             return value.toLocaleString();
         } else if (Math.abs(value) >= 1e10) {
             return `${(value / 10 ** ~~Math.log10(value)).toFixed(2)} * 10<sup>${~~Math.log10(value)}</sup>`;
-        } else if (Math.abs(value) >= 1) {
-            return value.toLocaleString(undefined, {maximumFractionDigits: 0});
+        } else if (Math.abs(value) >= 0.5) {
+            return Math.round(value).toLocaleString();
         } else if (Math.abs(value) > 0) {
             return `1/${format("number", 1 / value)}`;
         } else if (!isNaN(value)) {
             return "0";
         } else {
-            return "???";
+            return "Not a Number";
         }
     } else if (type === "time") {
         if (Math.abs(value) === Infinity) {
@@ -450,32 +518,8 @@ function format(type, value) {
     }
 }
 
-function toCount(n) {
-    n = ~~n;
-    if (n <= 1) return "";
-    const arrays = [
-        ["", "hen", "do", "triskai", "tetrakai", "pentakai", "hexakai", "heptakai", "octakai", "enneakai"],
-        ["", "double", "triple", "quadruple", "quintuple", "sextuple", "septuple", "octuple", "nonuple"],
-        ["deca", "icosa", "triaconta", "tetraconta", "pentaconta", "hexaconta", "heptaconta", "octaconta", "enneaconta"],
-        ["hecta", "dihecta", "trihecta", "tetrahecta", "pentahecta", "hexahecta", "heptahecta", "octahecta", "enneahecta"],
-        ["killia", "mega", "giga", "tera", "peta", "exa", "zetta", "yotta"],
-        ["", "hena", "di", "tri", "tetra", "penta", "hexa", "hepta", "octa", "ennea"]
-    ];
-
-    if (n < 10) {
-        return `${arrays[1][n - 1]}-`;
-    } else if (n < 20) {
-        return `${arrays[0][n - 10]}${arrays[2][0]}-`;
-    } else if (n < 100) {
-        return `${arrays[2][~~(n / 10) - 1]}-${arrays[5][n % 10]}-`.replace("--", "-");
-    } else if (n < 1000) {
-        return `${arrays[3][~~(n / 100) - 1]}-${arrays[2][~~((n % 100) / 10) - 1]}-${arrays[5][n % 10]}-`.replace("---", "--").replace("--", "-");
-    } else {
-        return `${n}-`;
-    }
-}
-
 function showTooltip(title, text, x, y) {
+    if (!settings.tooltipsEnabled) return;
     if (x === undefined) x = debug.mouseX / debug.zoom;
     if (y === undefined) y = debug.mouseY / debug.zoom;
     if (x + 256 > window.innerWidth / debug.zoom) x = window.innerWidth / debug.zoom - 256;
@@ -488,6 +532,34 @@ function showTooltip(title, text, x, y) {
 
 function hideTooltip() {
     document.getElementById("tooltip").style.display = "none";
+}
+
+function addMoney(amount, cause, operation) {
+    const opposites = {"+": "-", "-": "+", "*": "/", "/": "*"};
+    if (operation === undefined) operation = "+";
+    if (operation === "+") {
+        player.money += amount;
+    } else if (operation === "-") {
+        player.money -= amount;
+    } else if (operation === "*") {
+        player.money *= amount;
+    } else if (operation === "/") {
+        player.money /= amount;
+    }
+
+    function positive(n) {
+        if (operation === "+" || operation === "-") {
+            return Math.abs(n);
+        } else {
+            return Math.abs(n) < 1 ? 1 / n : n;
+        }
+    }
+
+    debug.recentTransactions.unshift(`<p style="color: ${amount > 0 ? "green" : amount < 0 ? "red" : "white"};">${cause} | ${amount > 0 ? operation : amount < 0 ? opposites[operation] : ""}$${format("money", positive(amount))}</p>`);
+    while (debug.recentTransactions.length > 10) {
+        debug.recentTransactions.pop();
+    }
+    document.getElementById("recentTransactions").innerHTML = debug.recentTransactions.join("");
 }
 
 setInterval(() => {
@@ -597,8 +669,10 @@ setInterval(() => {
         const elem = document.createElement("div");
         elem.className = "food";
         elem.id = `foodIndex${i}`;
+        let t = items[i].temp;
+        if (settings.units === "metric") t = (items[i].temp - 32) / 1.8;
         elem.setAttribute("onmousedown", `debug.selectedItem = debug.selectedItem !== ${i} ? ${i} : -1;`);
-        elem.setAttribute("onmouseover", `showTooltip(items[${i}].name, \`<p>${format("number", items[i].temp)}°F</p><p>${format("number", items[i].cooked)}% Cooked</p><p>${items[i].group !== "liquid" ? items[i].format() : ""}</p>${items[i].mass !== undefined && items[i].mass !== 0 ? `<p>${format("mass", items[i].mass)}</p>` : ''}${items[i].volume !== undefined && items[i].volume !== 0 ? `<p>${format("volume", items[i].volume)}</p>` : ''}<p>Age: ${format("time", items[i].age)}</p>\`);`);
+        elem.setAttribute("onmouseover", `showTooltip(items[${i}].name, \`<p>${format("number", t)}°${settings.units === "metric" ? "C" : settings.units === "imperial" ? "F" : ""}</p><p>${format("number", items[i].cooked)}% Cooked</p><p>${items[i].group !== "liquid" ? items[i].format() : ""}</p>${items[i].mass !== undefined && items[i].mass !== 0 ? `<p>${format("mass", items[i].mass)}</p>` : ''}${items[i].volume !== undefined && items[i].volume !== 0 ? `<p>${format("volume", items[i].volume)}</p>` : ''}<p>Age: ${format("time", items[i].age)}</p>\`);`);
         elem.setAttribute("onmouseout", "hideTooltip();");
 
         elem.append(document.createElement("img"));
@@ -636,23 +710,29 @@ document.onmousemove = e => {
     debug.mouseY = e.clientY;
 }
 
+document.onmousedown = () => {
+    debug.editingSettings = false;
+}
+
 document.onkeydown = e => {
+    if (debug.editingSettings) return;
     const locations = [
         "kitchen",
         "serve",
-        "bank"
+        "bank",
+        "config"
     ];
     if (e.key === "ArrowRight") {
         if (debug.location === "kitchen") {
             debug.location = "serve";
-            document.getElementById("serve").style.display = "";
-            document.getElementById("kitchen").style.display = "none";
+        } else if (debug.location === "config") {
+            debug.location = "kitchen";
         }
     } else if (e.key === "ArrowLeft") {
         if (debug.location === "serve") {
             debug.location = "kitchen";
-            document.getElementById("serve").style.display = "none";
-            document.getElementById("kitchen").style.display = "";
+        } else if (debug.location === "kitchen") {
+            debug.location = "config";
         }
     } else if (e.key === "ArrowDown") {
         if (debug.location === "kitchen") {
@@ -676,7 +756,7 @@ document.getElementById("autoCutter").onwheel = e => {
     const d = Number(document.getElementById("autoCutter").getAttribute("data-size"));
     let a = 1;
     if (d >= 10000) {
-        a = 2 ** (Math.log10(d) * 2);
+        a = 10 ** ~~Math.log10(d / 10);
     } else if (d >= 2500) {
         a = 25;
     } else if (d >= 1000) {
@@ -700,3 +780,12 @@ document.getElementById("autoCutter").onwheel = e => {
     document.getElementById("autoCutter").setAttribute("data-size", String(b > 0 ? b : 0));
     document.getElementById("autoCutterSize").innerText = format("mass", Number(document.getElementById("autoCutter").getAttribute("data-size")));
 }
+
+// THIS IS TEMPORARY
+
+function pay() {
+    addMoney(Math.random() * settings.maxPaycheckValue, "Paycheck", "+");
+    setTimeout(pay, settings.paycheckTime * 1000);
+}
+
+pay();

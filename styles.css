@@ -114,3 +114,63 @@ img {
     left: 0;
     transition: left 500ms, top 500ms;
 }
+
+#settings {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-left: -20vw;
+    margin-top: -20vh;
+    width: 40vw;
+    height: 40vh;
+    border-radius: 12px;
+    outline: none;
+    resize: none;
+    background: black;
+    color: white;
+    white-space: nowrap;
+}
+
+::-webkit-scrollbar {
+    width: 24px;
+}
+
+::-webkit-scrollbar-track {
+    background: #222;
+    border-radius: 12px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #333;
+    border-color: #222;
+    border-style: solid;
+    border-width: 6px;
+    border-radius: 12px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #444;
+}
+
+#foodList::-webkit-scrollbar-track {
+    background: #80b;
+}
+
+#foodList::-webkit-scrollbar-thumb {
+    background: #609;
+    border-color: #80b;
+}
+
+input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
+    display: none;
+}
+
+input, select, option {
+    font-family: inherit;
+    border-radius: 8px;
+    border-style: none;
+}
+
+input[type=number] {
+    width: 48px;
+}

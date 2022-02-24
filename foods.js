@@ -162,6 +162,8 @@ let foods = {
     whiteVinegar: {name: "White Vinegar", group: "Liquids", volume: 1000, price: 5},
     whiteWine: {name: "White Wine", group: "Liquids", volume: 1000, price: 8},
     wineVinegar: {name: "Wine Vinegar", group: "Liquids", volume: 1000, price: 5},
+
+    expensiveFood: {name: "$1 Billion Dollar Bill", group: "Useless Stuff", cookSpeed: 0, mass: 1, price: 1e9}
 };
 
 const animations = {

@@ -9,66 +9,123 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<div id="tooltip"
-     style="font-size: 75%; position: absolute; width: 256px; height: 192px; background: #80808080; display: none; border-radius: 20px; pointer-events: none; z-index: 2;"></div>
-<div id="kitchen">
-    <div id="foodListBtn" class="foodList"
-         style="border-radius: 3px; height: 80px; min-width: 40px; width: 40px; left: 50%; margin-left: -20px; position: absolute;"
-         onmousedown="toggleFoodList();" onmousemove="debug.tooltips.foodList();" onmouseout="hideTooltip();"></div>
-    <div id="stations">
-        <img alt="Table" src="img/counter.png" id="counter" onmousemove="debug.tooltips.counter();"
-             onmousedown="items[debug.selectedItem].location = 'counter'; debug.selectedItem = -1;">
-        <img id="oven" alt="Oven" src="img/oven.png" style="right: 0;" class="station"
-             onmousemove="debug.tooltips.oven();" onmouseout="hideTooltip();"
-             onmousedown="if (debug.locations.oven < 3) items[debug.selectedItem].location = 'oven'; else alert('Your oven is full!'); debug.selectedItem = -1;">
-        <img id="fridge" alt="Fridge" src="img/fridge.png" class="station" style="left: 0; z-index: -3;"
-             onmousemove="debug.tooltips.fridge();" onmouseout="hideTooltip();"
-             onmousedown="if (debug.locations.fridge < 4) items[debug.selectedItem].location = 'fridge'; else alert('Your fridge is full!'); debug.selectedItem = -1;">
-        <img id="sun" alt="Sun" src="img/sun.png" style="right: 0; top: 128px; z-index: -1;" class="station"
-             onmousemove="debug.tooltips.sun();" onmouseout="hideTooltip();"
-             onmousedown="if (debug.locations.sun < 4) items[debug.selectedItem].location = 'sun'; else alert('The sun is somehow full'); debug.selectedItem = -1;">
-        <img id="freezer" alt="Freezer" src="img/freezer.png" style="right: 128px;" class="station"
-             onmousemove="debug.tooltips.freezer();" onmouseout="hideTooltip();"
-             onmousedown="if (debug.locations.freezer < 4) items[debug.selectedItem].location = 'freezer'; else alert('Your freezer is full!'); debug.selectedItem = -1;">
-        <img id="accelerator" alt="Accelerator" src="img/accelerator-inactive.png" style="right: 256px; z-index: -1;"
-             class="station" onmousemove="debug.tooltips.accelerator();" onmouseout="hideTooltip();"
-             onmousedown="if (debug.locations.particleAccelerator < 1) items[debug.selectedItem].location = 'particleAccelerator'; else alert('The particle accelerator can only hold one item!'); debug.selectedItem = -1;">
-        <img id="decelerator" alt="Decelerator" src="img/decelerator-inactive.png" style="right: 384px; z-index: -1;"
-             class="station" onmousemove="debug.tooltips.decelerator();" onmouseout="hideTooltip();"
-             onmousedown="if (debug.locations.particleDecelerator < 1) items[debug.selectedItem].location = 'particleDecelerator'; else alert('The particle decelerator can only hold one item!'); debug.selectedItem = -1;">
-        <img id="mortar" alt="Mortar" src="img/mortar/0.png" style="right: 512px;" class="station"
-             onmousemove="debug.tooltips.mortar();" onmouseout="hideTooltip();"
-             onmousedown="items[debug.selectedItem].grind();">
-        <img id="autoCutter" alt="Automatic Cutter" src="img/autoCutter/0.png" style="left: 128px;" data-size="25"
-             class="station" onmousemove="debug.tooltips.autoCutter();" onmouseout="hideTooltip();"
-             onmousedown="items[debug.selectedItem].cut(document.getElementById('autoCutter').getAttribute('data-size'));">
-        <p id="autoCutterSize" style="z-index: 1; position: absolute; left: 160px; bottom: 0; pointer-events: none;">25
-            g</p>
+<div id="startScreen">
+    <h1>Cooking!</h1>
+    <p>Inspired by Cooking Simulator</p>
+    <p>Some ideas and textures shared both ways with <a href="https://gooseterv.github.io/cooking/" style="color: red;">GooseterV</a>
+    </p>
+    <b>FOR BEGINNERS: IMPORTANT THAT YOU READ TOOLTIPS!</b>
+    <p>You can press arrow keys to go to different areas</p>
+    <button style="width: 20%;" onclick="start();">When you're ready to start, click me!</button>
+</div>
+<div id="game" style="display: none;">
+    <div id="tooltip"
+         style="font-size: 75%; position: absolute; width: 256px; height: 192px; background: #80808080; display: none; border-radius: 20px; pointer-events: none; z-index: 2;"></div>
+    <div id="kitchen">
+        <div id="foodListBtn" class="foodList"
+             style="border-radius: 3px; height: 80px; min-width: 40px; width: 40px; left: 50%; margin-left: -20px; position: absolute;"
+             onmousedown="toggleFoodList();" onmousemove="debug.tooltips.foodList();" onmouseout="hideTooltip();"></div>
+        <div id="stations">
+            <img alt="Table" src="img/counter.png" id="counter" onmousemove="debug.tooltips.counter();"
+                 onmousedown="items[debug.selectedItem].location = 'counter'; debug.selectedItem = -1;">
+            <img id="oven" alt="Oven" src="img/oven.png" style="right: 0;" class="station"
+                 onmousemove="debug.tooltips.oven();" onmouseout="hideTooltip();"
+                 onmousedown="if (debug.locations.oven < 3) items[debug.selectedItem].location = 'oven'; else alert('Your oven is full!'); debug.selectedItem = -1;">
+            <img id="fridge" alt="Fridge" src="img/fridge.png" class="station" style="left: 0; z-index: -3;"
+                 onmousemove="debug.tooltips.fridge();" onmouseout="hideTooltip();"
+                 onmousedown="if (debug.locations.fridge < 4) items[debug.selectedItem].location = 'fridge'; else alert('Your fridge is full!'); debug.selectedItem = -1;">
+            <img id="sun" alt="Sun" src="img/sun.png" style="right: 0; top: 128px; z-index: -1;" class="station"
+                 onmousemove="debug.tooltips.sun();" onmouseout="hideTooltip();"
+                 onmousedown="if (debug.locations.sun < 4) items[debug.selectedItem].location = 'sun'; else alert('The sun is somehow full'); debug.selectedItem = -1;">
+            <img id="freezer" alt="Freezer" src="img/freezer.png" style="right: 128px;" class="station"
+                 onmousemove="debug.tooltips.freezer();" onmouseout="hideTooltip();"
+                 onmousedown="if (debug.locations.freezer < 4) items[debug.selectedItem].location = 'freezer'; else alert('Your freezer is full!'); debug.selectedItem = -1;">
+            <img id="accelerator" alt="Accelerator" src="img/accelerator-inactive.png"
+                 style="right: 256px; z-index: -1;"
+                 class="station" onmousemove="debug.tooltips.accelerator();" onmouseout="hideTooltip();"
+                 onmousedown="if (debug.locations.particleAccelerator < 1) items[debug.selectedItem].location = 'particleAccelerator'; else alert('The particle accelerator can only hold one item!'); debug.selectedItem = -1;">
+            <img id="decelerator" alt="Decelerator" src="img/decelerator-inactive.png"
+                 style="right: 384px; z-index: -1;"
+                 class="station" onmousemove="debug.tooltips.decelerator();" onmouseout="hideTooltip();"
+                 onmousedown="if (debug.locations.particleDecelerator < 1) items[debug.selectedItem].location = 'particleDecelerator'; else alert('The particle decelerator can only hold one item!'); debug.selectedItem = -1;">
+            <img id="mortar" alt="Mortar" src="img/mortar/0.png" style="right: 512px;" class="station"
+                 onmousemove="debug.tooltips.mortar();" onmouseout="hideTooltip();"
+                 onmousedown="items[debug.selectedItem].grind();">
+            <img id="autoCutter" alt="Automatic Cutter" src="img/autoCutter/0.png" style="left: 128px;" data-size="25"
+                 class="station" onmousemove="debug.tooltips.autoCutter();" onmouseout="hideTooltip();"
+                 onmousedown="items[debug.selectedItem].cut(document.getElementById('autoCutter').getAttribute('data-size'));">
+            <p id="autoCutterSize"
+               style="z-index: 1; position: absolute; left: 160px; bottom: 0; pointer-events: none;">25
+                g</p>
+        </div>
+        <fieldset id="recipeMaker" style="display: none;">
+            <legend>Plate</legend>
+        </fieldset>
+        <div id="foodList" style="pointer-events: none; height: 480px; opacity: 0;"><p>hi something broke</p></div>
+        <div id="debug" style="display: none;">
+            <div id="debugCheckImg"></div>
+        </div>
     </div>
-    <fieldset id="recipeMaker" style="display: none;">
-        <legend>Plate</legend>
-    </fieldset>
-    <div id="foodList" style="pointer-events: none; height: 480px; opacity: 0;"><p>hi</p></div>
-    <div id="debug" style="display: none;">
-        <div id="debugCheckImg"></div>
+    <div id="serve" style="display: none;">
+        <img alt="Plate" src="img/plate.png" id="plate" onmousemove="debug.tooltips.plate();"
+             onmousedown="items[debug.selectedItem].location = 'recipeMaker'; debug.selectedItem = -1;"
+             oncontextmenu="makeRecipe(debug.ingredients);">
+        <img alt="Trash Can" src="img/trash.png" id="trash" onmousemove="debug.tooltips.trash();"
+             onmousedown="items[debug.selectedItem].gone = true; debug.selectedItem = -1;" class="station"
+             style="left: 0; bottom: 0; z-index: -1;">
     </div>
-</div>
-<div id="serve" style="display: none;">
-    <img alt="Plate" src="img/plate.png" id="plate" onmousemove="debug.tooltips.plate();"
-         onmousedown="items[debug.selectedItem].location = 'recipeMaker'; debug.selectedItem = -1;"
-         oncontextmenu="makeRecipe(debug.ingredients);">
-    <img alt="Trash Can" src="img/trash.png" id="trash" onmousemove="debug.tooltips.trash();"
-         onmousedown="items[debug.selectedItem].gone = true; debug.selectedItem = -1;" class="station"
-         style="left: 0; bottom: 0; z-index: -1;">
-</div>
-<div id="bank" style="display: none;">
-    <h1 id="money">Money: $100</h1>
-    <div id="recentTransactions"></div>
-</div>
-<div id="items"></div>
-<div id="tooSmallAlert" style="display: none; text-align: center;">
-    <h1>Warning!</h1>
-    <p>Your screen is not wide enough! Try rotating your device, using a computer, or zooming out.</p>
+    <div id="bank" style="display: none;">
+        <h1 id="money">Money: $100</h1>
+        <div id="recentTransactions"></div>
+    </div>
+    <div id="config" style="display: none;">
+        <label for="settings" style="font-size: 32px;">Settings</label>
+        <textarea id="settings" style="display: none;" spellcheck="false"
+                  onchange="settings = JSON.parse(this.value); reload();"
+                  onclick="debug.editingSettings = true;" oninput="debug.editingSettings = true;"></textarea>
+        <br>
+        <br>
+        <label for="background">Background Color:</label>
+        <input type="text" name="background" id="background">
+        <br>
+        <label for="textColor">Text Color:</label>
+        <input type="text" name="textColor" id="textColor">
+        <br>
+        <label for="maxPaycheckValue">Max Paycheck Value:</label>
+        <input type="number" name="maxPaycheckValue" id="maxPaycheckValue">
+        <br>
+        <label for="paycheckTime">Paycheck Interval:</label>
+        <input type="number" name="paycheckTime" id="paycheckTime">
+        <br>
+        <label for="units">Units:</label>
+        <select name="units" id="units">
+            <option value="imperial">Imperial</option>
+            <option value="metric">Metric</option>
+        </select>
+        <br>
+        <label for="tooltipsEnabled">Tooltips Enabled?</label>
+        <input type="checkbox" name="tooltipsEnabled" id="tooltipsEnabled">
+        <br>
+        <label for="canMakeRecipes">Can Make Recipes?</label>
+        <input type="checkbox" name="canMakeRecipes" id="canMakeRecipes">
+        <br>
+        <label for="foodRottingSpeed">Food Aging Speed:</label>
+        <input type="number" name="foodRottingSpeed" id="foodRottingSpeed">
+        <br>
+        <label for="cookSpeed">Food Cooking Speed:</label>
+        <input type="number" name="cookSpeed" id="cookSpeed">
+        <br>
+        <label for="minCookingTemperature">Food Cook Temperature (F):</label>
+        <input type="number" name="minCookingTemperature" id="minCookingTemperature">
+        <br>
+        <label for="roomTemp">Room Temperature (F):</label>
+        <input type="number" name="roomTemp" id="roomTemp">
+    </div>
+    <div id="items"></div>
+    <div id="tooSmallAlert" style="display: none; text-align: center;">
+        <h1>Warning!</h1>
+        <p>Your screen is not wide enough! Try rotating your device, using a computer, or zooming out.</p>
+    </div>
 </div>
 <script src="toNumberName.js"></script>
 <script src="foods.js"></script>
