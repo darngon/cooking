@@ -1,10 +1,10 @@
 let items = [];
 let player = {
-    money: 0
+    money: 0,
+    recentTransactions: []
 };
 let debug = {
     isInKitchen: true,
-    recentTransactions: [],
     location: "kitchen",
     groups: {},
     tooltips: {
@@ -85,15 +85,20 @@ let settings = {
     roomTemp: 72
 };
 
-function start() {
+if (localStorage.getItem("savedItems") !== null) document.getElementById("loadGameBtn").style.display = "";
+document.getElementById("icon").href = `img/food/${Object.keys(foods)[~~(Math.random() * Object.keys(foods).length)]}.png`;
+
+function start(loadSave) {
+    if (loadSave) load();
     document.getElementById("startScreen").style.display = "none";
     document.getElementById("game").style.display = "";
+    setInterval(save, 5000);
 }
 
 // settings.foods = foods;
 
 for (const s in settings) {
-    document.getElementById(s).setAttribute("onchange", `settings['${s}'] = this.value; updateSettings();`);
+    document.getElementById(s).setAttribute("onchange", `settings['${s}'] = this.type === "checkbox" ? this.checked : this.value; if ("${document.getElementById(s).type}" === "number") settings['${s}'] = Number(settings['${s}']); updateSettings();`);
 }
 
 for (const i in animations) {
@@ -289,24 +294,55 @@ function showGroup(g) {
     }
 }
 
+function save() {
+    localStorage.setItem("savedItems", JSON.stringify(items));
+    localStorage.setItem("savedPlayer", JSON.stringify(player));
+    localStorage.setItem("savedSettings", JSON.stringify(settings));
+}
+
+function load() {
+    items = JSON.parse(localStorage.getItem("savedItems"));
+    player = JSON.parse(localStorage.getItem("savedPlayer"));
+    settings = JSON.parse(localStorage.getItem("savedSettings"));
+    for (const g in items) {
+        items[g] = new food(items[g]);
+    }
+    document.getElementById("recentTransactions").innerHTML = player.recentTransactions.join("");
+}
+
 class food {
-    constructor(id, isCustom, cookSpeed, cooked, mass, volume, temp, name) {
-        this.id = id;
-        this.custom = isCustom !== undefined ? isCustom : false;
-        this.name = this.custom ? name : foods[this.id].name;
-        this.location = "counter";
-        this.temp = temp !== undefined ? temp : settings.roomTemp;
-        this.cooked = cooked !== undefined ? cooked : 0;
-        this.dateOfCreation = Date.now() / 1000;
-        this.mass = mass;
-        this.volume = volume;
-        this.cookSpeed = cookSpeed;
-        if (!this.custom) this.group = foods[id].group;
-        if (!this.custom) this.cookSpeed = foods[id].cookSpeed !== undefined ? foods[id].cookSpeed : 1;
+    constructor(id, isCustom, cookSpeed, cooked, mass, volume, temp, name, liquids) {
+        if (typeof id !== "object") {
+            this.id = id;
+            this.custom = isCustom !== undefined ? isCustom : false;
+            this.name = this.custom ? name : foods[this.id].name;
+            this.location = "counter";
+            this.temp = temp !== undefined ? temp : settings.roomTemp;
+            this.cooked = cooked !== undefined ? cooked : 0;
+            this.dateOfCreation = Date.now() / 1000;
+            this.mass = mass;
+            this.volume = volume;
+            this.cookSpeed = cookSpeed;
+            this.liquids = liquids !== undefined ? liquids : [];
+            if (!this.custom) this.group = foods[id].group;
+            if (!this.custom) this.cookSpeed = foods[id].cookSpeed !== undefined ? foods[id].cookSpeed : 1;
+        } else {
+            for (const g in id.liquids) id.liquids[g] = new food(id.liquids[g]);
+            for (const g in id) this[g] = id[g];
+        }
         setInterval(() => {
             this.age = (Date.now() / 1000 - this.dateOfCreation) * settings.foodRottingSpeed;
             this.temp = (this.temp - settings.roomTemp) * 0.9999 + settings.roomTemp;
-            if (this.temp < -459) this.temp = -459;
+            if (this.temp < -459) {
+                this.temp = -459;
+            } else if (this.temp > 212) {
+                for (const l in this.liquids) {
+                    this.liquids[l].volume /= 1 + (this.temp - 212) / 500000;
+                    if (this.liquids[l].volume < 0.001) {
+                        this.liquids.splice(Number(l), 1);
+                    }
+                }
+            }
             this.cooked += (this.temp - settings.minCookingTemperature > 0 ? (this.temp - settings.minCookingTemperature) / (3000 / this.cookSpeed) : 0) * settings.cookSpeed;
             if (this.mass < 0.001 && this.mass > 0) this.gone = true;
             if (this.volume < 0.001 && this.volume > 0) this.gone = true;
@@ -431,6 +467,17 @@ class food {
             alert(`You can't cut a liquid!`);
         }
     }
+
+    addLiquid(liquid) {
+        console.log(liquid);
+        for (const l of this.liquids) {
+            if (liquid.liquids.sort().join() === l.liquids.sort().join() && liquid.id === l.id) {
+                l.volume += liquid.volume;
+                return;
+            }
+        }
+        this.liquids.push(liquid);
+    }
 }
 
 function format(type, value) {
@@ -507,7 +554,7 @@ function format(type, value) {
         } else if (Math.abs(value) >= 1) {
             return `${Math.floor(value)}s`;
         } else {
-            return "<1s";
+            return "";
         }
     } else if (type === "money") {
         if (Math.abs(value) === Infinity) {
@@ -518,16 +565,16 @@ function format(type, value) {
     }
 }
 
-function showTooltip(title, text, x, y) {
+function showTooltip(title, text, x, y, shift) {
+    document.getElementById("tooltip").innerHTML = `<p style="white-space: nowrap; overflow-x: hidden; text-overflow: ellipsis;"><b>${title}</b></p><p>${text}</p><p class="tooltipHoldShift" style="display: none;">${shift}</p>`;
     if (!settings.tooltipsEnabled) return;
     if (x === undefined) x = debug.mouseX / debug.zoom;
     if (y === undefined) y = debug.mouseY / debug.zoom;
-    if (x + 256 > window.innerWidth / debug.zoom) x = window.innerWidth / debug.zoom - 256;
-    if (y + 192 > window.innerHeight / debug.zoom) y = window.innerHeight / debug.zoom - 192;
+    if (x + 256 > window.innerWidth / debug.zoom) x = window.innerWidth / debug.zoom - document.getElementById("tooltip").clientWidth;
+    if (y + 192 > window.innerHeight / debug.zoom) y = window.innerHeight / debug.zoom - document.getElementById("tooltip").clientHeight;
     document.getElementById("tooltip").style.display = "";
     document.getElementById("tooltip").style.left = `${x}px`;
     document.getElementById("tooltip").style.top = `${y}px`;
-    document.getElementById("tooltip").innerHTML = `<p style="white-space: nowrap; overflow-x: hidden; text-overflow: ellipsis;"><b>${title}</b></p><p>${text}</p>`;
 }
 
 function hideTooltip() {
@@ -555,12 +602,16 @@ function addMoney(amount, cause, operation) {
         }
     }
 
-    debug.recentTransactions.unshift(`<p style="color: ${amount > 0 ? "green" : amount < 0 ? "red" : "white"};">${cause} | ${amount > 0 ? operation : amount < 0 ? opposites[operation] : ""}$${format("money", positive(amount))}</p>`);
-    while (debug.recentTransactions.length > 10) {
-        debug.recentTransactions.pop();
+    player.recentTransactions.unshift(`<p style="color: ${amount > 0 ? "green" : amount < 0 ? "red" : "white"};">${cause} | ${amount > 0 ? operation : amount < 0 ? opposites[operation] : ""}$${format("money", positive(amount))}</p>`);
+    while (player.recentTransactions.length > 10) {
+        player.recentTransactions.pop();
     }
-    document.getElementById("recentTransactions").innerHTML = debug.recentTransactions.join("");
+    document.getElementById("recentTransactions").innerHTML = player.recentTransactions.join("");
 }
+
+setInterval(() => {
+    for (const g of document.getElementsByClassName("tooltipHoldShift")) g.style.display = debug.holdingShift ? "" : "none";
+}, 20);
 
 setInterval(() => {
     debug.ingredients = [];
@@ -579,14 +630,13 @@ setInterval(() => {
     for (const i in items) {
         if (debug.locations[items[i].location] === undefined) debug.locations[items[i].location] = 0;
         debug.locations[items[i].location]++;
-        let left = 0;
-        let top = 0;
-        let width = 0;
-        let height = 0;
-        let selected = false;
-        let visible = true;
-        width = 32;
-        height = 32;
+        let left = 0,
+            top = 0,
+            width = 32,
+            height = 32,
+            rotation = 0,
+            selected = false,
+            visible = true;
 
         if (items[i].location === "counter" || items[i].location === "recipeMaker") {
             top = window.innerHeight / debug.zoom / 2 - 80 + 16 * ~~((debug.locations[items[i].location] - 1) / 5);
@@ -670,14 +720,18 @@ setInterval(() => {
         elem.className = "food";
         elem.id = `foodIndex${i}`;
         let t = items[i].temp;
+        let liquids = "";
+        for (const l of items[i].liquids) {
+            liquids += `<p>${l.name} | ${format("volume", l.volume)}</p>`;
+        }
         if (settings.units === "metric") t = (items[i].temp - 32) / 1.8;
-        elem.setAttribute("onmousedown", `debug.selectedItem = debug.selectedItem !== ${i} ? ${i} : -1;`);
-        elem.setAttribute("onmouseover", `showTooltip(items[${i}].name, \`<p>${format("number", t)}°${settings.units === "metric" ? "C" : settings.units === "imperial" ? "F" : ""}</p><p>${format("number", items[i].cooked)}% Cooked</p><p>${items[i].group !== "liquid" ? items[i].format() : ""}</p>${items[i].mass !== undefined && items[i].mass !== 0 ? `<p>${format("mass", items[i].mass)}</p>` : ''}${items[i].volume !== undefined && items[i].volume !== 0 ? `<p>${format("volume", items[i].volume)}</p>` : ''}<p>Age: ${format("time", items[i].age)}</p>\`);`);
+        elem.setAttribute("onmousedown", `if (items[debug.selectedItem] !== undefined && items[debug.selectedItem].volume !== undefined) {items[debug.selectedItem].gone = true; items[${i}].addLiquid(items[debug.selectedItem]);} else debug.selectedItem = debug.selectedItem !== ${i} ? ${i} : -1;`);
+        elem.setAttribute("onmouseover", `showTooltip(items[${i}].name, \`<p>${format("number", t)}°${settings.units === "metric" ? "C" : settings.units === "imperial" ? "F" : ""}</p><p>${format("number", items[i].cooked)}% Cooked</p><p>${items[i].group !== "liquid" ? items[i].format() : ""}</p>${items[i].mass !== undefined && items[i].mass !== 0 ? `<p>${format("mass", items[i].mass)}</p>` : ''}${items[i].volume !== undefined && items[i].volume !== 0 ? `<p>${format("volume", items[i].volume)}</p>` : ''}<p>Age: ${format("time", items[i].age)}</p><div style="background: #00000080; width: fit-content;">${liquids}</div>\`);`);
         elem.setAttribute("onmouseout", "hideTooltip();");
 
         elem.append(document.createElement("img"));
         if (foods[items[i].id] === undefined) foods[items[i].id] = {imgAvailable: false};
-        elem.children[0].style = `${visible ? "" : "display: none; "}position: absolute; left: ${left}px; top: ${top}px; filter: brightness(${100 - items[i].cooked / 2}%) drop-shadow(0 0 8px ${tempColor}); ${debug.selectedItem === Number(i) ? "pointer-events: none" : ""};`;
+        elem.children[0].style = `${visible ? "" : "display: none; "}position: absolute; left: ${left}px; top: ${top}px; filter: brightness(${100 - items[i].cooked / 2}%) drop-shadow(0 0 8px ${tempColor}); transform: rotate(${rotation}deg); ${debug.selectedItem === Number(i) ? "pointer-events: none" : ""};`;
         elem.children[0].src = `img/food/${foods[items[i].id].imgAvailable ? items[i].id : "unknown"}.png`;
         elem.children[0].height = height;
         elem.children[0].width = width;
@@ -696,6 +750,7 @@ setInterval(() => {
             items.splice(Number(i), 1);
         }
     }
+
     const index = items.indexOf(undefined);
     if (index > -1) items.splice(index, 1);
     document.getElementById("items").innerHTML = `${output}`;
@@ -722,7 +777,9 @@ document.onkeydown = e => {
         "bank",
         "config"
     ];
-    if (e.key === "ArrowRight") {
+    if (e.key === "Shift") {
+        debug.holdingShift = true;
+    } else if (e.key === "ArrowRight") {
         if (debug.location === "kitchen") {
             debug.location = "serve";
         } else if (debug.location === "config") {
@@ -779,6 +836,10 @@ document.getElementById("autoCutter").onwheel = e => {
 
     document.getElementById("autoCutter").setAttribute("data-size", String(b > 0 ? b : 0));
     document.getElementById("autoCutterSize").innerText = format("mass", Number(document.getElementById("autoCutter").getAttribute("data-size")));
+}
+
+document.onkeyup = () => {
+    debug.holdingShift = false;
 }
 
 // THIS IS TEMPORARY

@@ -2,11 +2,11 @@
 <html lang="en" oncontextmenu="return false;" onmouseout="hideTooltip();" ondragstart="return false;">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Cooking</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="img/bottle.png" id="icon">
 </head>
 <body>
 <div id="startScreen">
@@ -16,11 +16,13 @@
     </p>
     <b>FOR BEGINNERS: IMPORTANT THAT YOU READ TOOLTIPS!</b>
     <p>You can press arrow keys to go to different areas</p>
-    <button style="width: 20%;" onclick="start();">When you're ready to start, click me!</button>
+    <button style="width: 20%;" onclick="start(false);">New Game</button>
+    <br>
+    <button style="width: 20%; display: none;" onclick="start(true);" id="loadGameBtn">Load Game</button>
 </div>
 <div id="game" style="display: none;">
     <div id="tooltip"
-         style="font-size: 75%; position: absolute; width: 256px; height: 192px; background: #80808080; display: none; border-radius: 20px; pointer-events: none; z-index: 2;"></div>
+         style="font-size: 75%; position: absolute; width: 256px; min-height: 192px; background: #80808080; display: none; border-radius: 20px; pointer-events: none; z-index: 2;"></div>
     <div id="kitchen">
         <div id="foodListBtn" class="foodList"
              style="border-radius: 3px; height: 80px; min-width: 40px; width: 40px; left: 50%; margin-left: -20px; position: absolute;"
@@ -55,8 +57,7 @@
                  class="station" onmousemove="debug.tooltips.autoCutter();" onmouseout="hideTooltip();"
                  onmousedown="items[debug.selectedItem].cut(document.getElementById('autoCutter').getAttribute('data-size'));">
             <p id="autoCutterSize"
-               style="z-index: 1; position: absolute; left: 160px; bottom: 0; pointer-events: none;">25
-                g</p>
+               style="z-index: 1; position: absolute; left: 160px; bottom: 0; pointer-events: none;">25 g</p>
         </div>
         <fieldset id="recipeMaker" style="display: none;">
             <legend>Plate</legend>
