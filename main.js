@@ -316,6 +316,91 @@ function load() {
     document.getElementById("recentTransactions").innerHTML = player.recentTransactions.join("");
 }
 
+function toBills(n) {
+    let output = [];
+    while (n >= 1e9) {
+        output.push("billion");
+        n -= 1e9;
+    }
+    while (n >= 1e8) {
+        output.push("hundredMillion");
+        n -= 1e8;
+    }
+    while (n >= 1e7) {
+        output.push("tenMillion");
+        n -= 1e7;
+    }
+    while (n >= 1e6) {
+        output.push("million");
+        n -= 1e6;
+    }
+    while (n >= 100000) {
+        output.push("hundredThousand");
+        n -= 100000;
+    }
+    while (n >= 10000) {
+        output.push("tenThousand");
+        n -= 10000;
+    }
+    while (n >= 1000) {
+        output.push("thousand");
+        n -= 1000;
+    }
+    while (n >= 500) {
+        output.push("fiveHundred");
+        n -= 500;
+    }
+    while (n >= 100) {
+        output.push("hundred");
+        n -= 100;
+    }
+    while (n >= 50) {
+        output.push("fifty");
+        n -= 50;
+    }
+    while (n >= 20) {
+        output.push("twenty");
+        n -= 20;
+    }
+    while (n >= 10) {
+        output.push("ten");
+        n -= 10;
+    }
+    while (n >= 5) {
+        output.push("five");
+        n -= 5;
+    }
+    while (n >= 2) {
+        output.push("two");
+        n -= 2;
+    }
+    while (n >= 1) {
+        output.push("one");
+        n--;
+    }
+    while (n >= 0.5) {
+        output.push("fiftyCents");
+        n -= 0.5;
+    }
+    while (n >= 0.25) {
+        output.push("quarter");
+        n -= 0.25;
+    }
+    while (n >= 0.1) {
+        output.push("dime");
+        n -= 0.1;
+    }
+    while (n >= 0.05) {
+        output.push("nickel");
+        n -= 0.05;
+    }
+    while (n >= 0.01) {
+        output.push("penny");
+        n -= 0.01;
+    }
+    return output;
+}
+
 class food {
     constructor(id, isCustom, cookSpeed, cooked, mass, volume, temp, name, liquids) {
         if (typeof id !== "object") {
@@ -587,32 +672,19 @@ function hideTooltip() {
     document.getElementById("tooltip").style.display = "none";
 }
 
-function addMoney(amount, cause, operation) {
-    const opposites = {"+": "-", "-": "+", "*": "/", "/": "*"};
-    if (operation === undefined) operation = "+";
-    if (operation === "+") {
-        player.money += amount;
-    } else if (operation === "-") {
-        player.money -= amount;
-    } else if (operation === "*") {
-        player.money *= amount;
-    } else if (operation === "/") {
-        player.money /= amount;
-    }
-
-    function positive(n) {
-        if (operation === "+" || operation === "-") {
-            return Math.abs(n);
-        } else {
-            return Math.abs(n) < 1 ? 1 / n : n;
-        }
-    }
-
-    player.recentTransactions.unshift(`<p style="color: ${amount > 0 ? "green" : amount < 0 ? "red" : "white"};">${cause} | ${amount > 0 ? operation : amount < 0 ? opposites[operation] : ""}$${format("money", positive(amount))}</p>`);
+function addMoney(amount, cause) {
+    player.recentTransactions.unshift(`<p style="color: ${amount > 0 ? "green" : amount < 0 ? "red" : "white"};">${cause} | ${amount > 0 ? "+" : amount < 0 ? "-" : ""}$${format("money", Math.abs(amount))}</p>`);
     while (player.recentTransactions.length > 10) {
         player.recentTransactions.pop();
     }
     document.getElementById("recentTransactions").innerHTML = player.recentTransactions.join("");
+    if (cause !== "Deposit" && amount >= 0) {
+        for (const b of toBills(amount)) {
+            items.push(new food(b, false, undefined, undefined, 1));
+        }
+    } else {
+        player.money += amount;
+    }
 }
 
 function deposit() {
@@ -761,9 +833,9 @@ setInterval(() => {
 
         if (items[i].gone) {
             items.splice(Number(i), 1);
-            if (i < debug.selectedItem) {
+            if (Number(i) < debug.selectedItem) {
                 debug.selectedItem--;
-            } else if (i === debug.selectedItem) {
+            } else if (Number(i) === debug.selectedItem) {
                 debug.selectedItem = -1;
             }
         }
