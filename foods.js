@@ -1,7 +1,7 @@
 let foods = {
     almond: {name: "Almond", group: "Nuts", mass: 1.5, price: 0.05, imgAvailable: true},
     anchovy: {name: "Anchovy", group: "Seafood", mass: 40, price: 2},
-    apple: {name: "Apple", group: "Fruits", mass: 200, price: 100},
+    apple: {name: "Apple", group: "Fruits", mass: 200, price: 0.5},
     asparagus: {name: "Asparagus", group: "Vegetables", mass: 20, price: 0.5},
     avocado: {name: "Avocado", group: "Fruits", mass: 150, price: 1},
     bacon: {name: "Bacon", group: "Meats", mass: 20, price: 1.5},
