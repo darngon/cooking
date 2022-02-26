@@ -77,6 +77,9 @@
     </div>
     <div id="bank" style="display: none;">
         <h1 id="money">Money: $100</h1>
+        <img src="img/wallet.png" alt="Wallet" style="position: absolute; left: 0; width: 512px; z-index: 0;"
+             onmousemove="debug.tooltips.wallet();" onmouseout="hideTooltip();"
+             onmousedown="if (foods[items[debug.selectedItem].id].group === 'Money') {items[debug.selectedItem].location = 'wallet'; debug.selectedItem = -1;}">
         <canvas height="128" width="128" id="depositCanvas" onclick="deposit();"></canvas>
         <p id="depositText">Deposit</p>
         <div id="recentTransactions"></div>

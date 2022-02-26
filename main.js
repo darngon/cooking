@@ -43,6 +43,9 @@ let debug = {
         },
         trash() {
             showTooltip("Trash", "bye bye food");
+        },
+        wallet() {
+            showTooltip("Wallet", "Used to store money outside of the bank");
         }
     },
     selectedItem: -1,
@@ -681,6 +684,7 @@ function addMoney(amount, cause) {
     if (cause !== "Deposit" && amount >= 0) {
         for (const b of toBills(amount)) {
             items.push(new food(b, false, undefined, undefined, 1));
+            items[items.length - 1].location = "wallet";
         }
     } else {
         player.money += amount;
@@ -760,8 +764,14 @@ setInterval(() => {
 
         if (debug.location !== "kitchen") visible = false;
 
+        if (items[i].location === "wallet") {
+            top = 272 + 8 * ~~((debug.locations[items[i].location] - 1) / 8);
+            left = 128 + 32 * ((debug.locations[items[i].location] - 1) % 8);
+            visible = debug.location === "bank";
+        }
+
         if (items[i].location === "recipeMaker") {
-            visible = debug.location !== "kitchen";
+            visible = debug.location === "recipeMaker";
             top += 32;
             let exists = false;
 
