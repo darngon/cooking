@@ -182,7 +182,31 @@ let foods = {
     million: {name: "$1 Million Bill", group: "Money", mass: 1, price: 1e6},
     tenMillion: {name: "$10 Million Bill", group: "Money", mass: 1, price: 1e7},
     hundredMillion: {name: "$100 Million Bill", group: "Money", mass: 1, price: 1e8},
-    billion: {name: "$1 Billion Bill", group: "Money", mass: 1, price: 1e9}
+    billion: {name: "$1 Billion Bill", group: "Money", mass: 1, price: 1e9},
+    tenBillion: {name: "$10 Billion Bill", group: "Money", mass: 1, price: 1e10},
+    hundredBillion: {name: "$100 Billion Bill", group: "Money", mass: 1, price: 1e11},
+    trillion: {name: "$1 Trillion Bill", group: "Money", mass: 1, price: 1e12},
+    tenTrillion: {name: "$10 Trillion Bill", group: "Money", mass: 1, price: 1e13},
+    hundredTrillion: {name: "$100 Trillion Bill", group: "Money", mass: 1, price: 1e14},
+    quadrillion: {name: "$1 Quadrillion Bill", group: "Money", mass: 1, price: 1e15},
+    tenQuadrillion: {name: "$10 Quadrillion Bill", group: "Money", mass: 1, price: 1e16},
+    hundredQuadrillion: {name: "$100 Quadrillion Bill", group: "Money", mass: 1, price: 1e17},
+    quintillion: {name: "$1 Quintillion Bill", group: "Money", mass: 1, price: 1e18},
+    tenQuintillion: {name: "$10 Quintillion Bill", group: "Money", mass: 1, price: 1e19},
+    hundredQuintillion: {name: "$100 Quintillion Bill", group: "Money", mass: 1, price: 1e20},
+    sextillion: {name: "$1 Sextillion Bill", group: "Money", mass: 1, price: 1e21},
+    tenSextillion: {name: "$10 Sextillion Bill", group: "Money", mass: 1, price: 1e22},
+    hundredSextillion: {name: "$100 Sextillion Bill", group: "Money", mass: 1, price: 1e23},
+    septillion: {name: "$1 Septillion Bill", group: "Money", mass: 1, price: 1e24},
+    tenSeptillion: {name: "$10 Septillion Bill", group: "Money", mass: 1, price: 1e25},
+    hundredSeptillion: {name: "$100 Septillion Bill", group: "Money", mass: 1, price: 1e26},
+    octillion: {name: "$1 Octillion Bill", group: "Money", mass: 1, price: 1e27},
+    tenOctillion: {name: "$10 Octillion Bill", group: "Money", mass: 1, price: 1e28},
+    hundredOctillion: {name: "$100 Octillion Bill", group: "Money", mass: 1, price: 1e29},
+    nonillion: {name: "$1 Nonillion Bill", group: "Money", mass: 1, price: 1e30},
+    tenNonillion: {name: "$10 Nonillion Bill", group: "Money", mass: 1, price: 1e31},
+    hundredNonillion: {name: "$100 Nonillion Bill", group: "Money", mass: 1, price: 1e32},
+    decillion: {name: "$1 Decillion Bill", group: "Money", mass: 1, price: 1e33}
 };
 
 const animations = {

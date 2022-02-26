@@ -321,6 +321,102 @@ function load() {
 
 function toBills(n) {
     let output = [];
+    while (n >= 1e33) {
+        output.push("decillion");
+        n -= 1e33;
+    }
+    while (n >= 1e32) {
+        output.push("hundredNonillion");
+        n -= 1e32;
+    }
+    while (n >= 1e31) {
+        output.push("tenNonillion");
+        n -= 1e31;
+    }
+    while (n >= 1e30) {
+        output.push("nonillion");
+        n -= 1e30;
+    }
+    while (n >= 1e29) {
+        output.push("hundredOctillion");
+        n -= 1e29;
+    }
+    while (n >= 1e28) {
+        output.push("tenOctillion");
+        n -= 1e28;
+    }
+    while (n >= 1e27) {
+        output.push("octillion");
+        n -= 1e27;
+    }
+    while (n >= 1e26) {
+        output.push("hundredSeptillion");
+        n -= 1e26;
+    }
+    while (n >= 1e25) {
+        output.push("tenSeptillion");
+        n -= 1e25;
+    }
+    while (n >= 1e24) {
+        output.push("septillion");
+        n -= 1e24;
+    }
+    while (n >= 1e23) {
+        output.push("hundredSextillion");
+        n -= 1e23;
+    }
+    while (n >= 1e22) {
+        output.push("tenSextillion");
+        n -= 1e22;
+    }
+    while (n >= 1e21) {
+        output.push("sextillion");
+        n -= 1e21;
+    }
+    while (n >= 1e20) {
+        output.push("hundredQuintillion");
+        n -= 1e20;
+    }
+    while (n >= 1e19) {
+        output.push("tenQuintillion");
+        n -= 1e19;
+    }
+    while (n >= 1e18) {
+        output.push("quintillion");
+        n -= 1e18;
+    }
+    while (n >= 1e17) {
+        output.push("hundredQuadrillion");
+        n -= 1e17;
+    }
+    while (n >= 1e16) {
+        output.push("tenQuadrillion");
+        n -= 1e16;
+    }
+    while (n >= 1e15) {
+        output.push("quadrillion");
+        n -= 1e15;
+    }
+    while (n >= 1e14) {
+        output.push("hundredTrillion");
+        n -= 1e14;
+    }
+    while (n >= 1e13) {
+        output.push("tenTrillion");
+        n -= 1e13;
+    }
+    while (n >= 1e12) {
+        output.push("trillion");
+        n -= 1e12;
+    }
+    while (n >= 1e11) {
+        output.push("hundredBillion");
+        n -= 1e11;
+    }
+    while (n >= 1e10) {
+        output.push("tenBillion");
+        n -= 1e10;
+    }
     while (n >= 1e9) {
         output.push("billion");
         n -= 1e9;
@@ -695,6 +791,15 @@ function deposit() {
     if (foods[items[debug.selectedItem].id].group === "Money") {
         items[debug.selectedItem].gone = true;
         addMoney(foods[items[debug.selectedItem].id].price * items[debug.selectedItem].mass, "Deposit");
+    }
+}
+
+function depositAll() {
+    for (const i in items) {
+        if (foods[items[i].id].group === "Money") {
+            debug.selectedItem = Number(i);
+            deposit()
+        }
     }
 }
 
