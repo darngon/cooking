@@ -866,5 +866,3 @@ function pay() {
     addMoney(Math.random() * settings.maxPaycheckValue, "Paycheck", "+");
     debug.paycheckInterval = setTimeout(pay, settings.paycheckTime * 1000);
 }
-
-pay();
