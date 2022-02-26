@@ -12,6 +12,60 @@
     }
 }
 
+@media screen and (max-width: 220px) {
+    body {
+        zoom: 12.5%;
+    }
+}
+
+@media screen and (max-width: 110px) {
+    body {
+        zoom: 6.25%;
+    }
+}
+
+@media screen and (max-width: 55px) {
+    body {
+        zoom: 3.125%;
+    }
+}
+
+@media screen and (max-width: 28px) {
+    body {
+        zoom: 1.5625%;
+    }
+}
+
+@media screen and (max-width: 14px) {
+    body {
+        zoom: 0.78125%;
+    }
+}
+
+@media screen and (max-width: 7px) {
+    body {
+        zoom: calc(0.78125% / 2);
+    }
+}
+
+@media screen and (max-width: 4px) {
+    body {
+        zoom: calc(0.78125% / 4);
+    }
+}
+
+@media screen and (max-width: 2px) {
+    body {
+        zoom: calc(0.78125% / 8);
+    }
+}
+
+@media screen and (max-width: 1px) {
+    body {
+        zoom: calc(0.78125% / 16);
+    }
+}
+
 body {
     overflow: hidden;
     text-overflow: ellipsis;
@@ -173,4 +227,19 @@ input, select, option {
 
 input[type=number] {
     width: 48px;
+}
+
+#depositCanvas {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+}
+
+#depositText {
+    position: absolute;
+    top: 32px;
+    right: 32px;
+    font-size: 24px;
+    z-index: 100;
+    pointer-events: none;
 }

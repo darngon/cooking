@@ -92,6 +92,10 @@ function start(loadSave) {
     if (loadSave) load();
     document.getElementById("startScreen").style.display = "none";
     document.getElementById("game").style.display = "";
+    const ctx = document.getElementById("depositCanvas").getContext("2d");
+    ctx.fillStyle = "#080";
+    ctx.arc(64, 64, 64, 0, Math.PI * 2);
+    ctx.fill();
     setInterval(save, 5000);
 }
 
@@ -111,6 +115,7 @@ for (const i in animations) {
 }
 
 function updateSettings() {
+    clearTimeout(debug.paycheckInterval);
     for (const s in settings) {
         document.getElementById(s).value = settings[s];
         if (document.getElementById(s).type === "checkbox") document.getElementById(s).checked = settings[s];
@@ -120,6 +125,7 @@ function updateSettings() {
     settings.foods = foods; */
     document.body.style.background = settings.background;
     document.body.style.color = settings.textColor;
+    pay();
 }
 
 function makeRecipe(ingredients) {
@@ -609,13 +615,20 @@ function addMoney(amount, cause, operation) {
     document.getElementById("recentTransactions").innerHTML = player.recentTransactions.join("");
 }
 
+function deposit() {
+    if (foods[items[debug.selectedItem].id].group === "Money") {
+        items[debug.selectedItem].gone = true;
+        addMoney(foods[items[debug.selectedItem].id].price * items[debug.selectedItem].mass, "Deposit");
+    }
+}
+
 setInterval(() => {
     for (const g of document.getElementsByClassName("tooltipHoldShift")) g.style.display = debug.holdingShift ? "" : "none";
 }, 20);
 
 setInterval(() => {
     debug.ingredients = [];
-    debug.zoom = window.innerWidth < 439 ? 0.25 : window.innerWidth < 878 ? 0.5 : 1;
+    debug.zoom = window.innerWidth < 1 ? 1 / 2048 : window.innerWidth < 2 ? 1 / 1024 : window.innerWidth < 4 ? 1 / 512 : window.innerWidth < 7 ? 1 / 256 : window.innerWidth < 14 ? 1 / 128 : window.innerWidth < 28 ? 1 / 64 : window.innerWidth < 55 ? 1 / 32 : window.innerWidth < 110 ? 1 / 16 : window.innerWidth < 220 ? 1 / 8 : window.innerWidth < 439 ? 1 / 4 : window.innerWidth < 878 ? 1 / 2 : 1;
     let output = "";
     let output2 = "";
     debug.locations = {
@@ -748,6 +761,11 @@ setInterval(() => {
 
         if (items[i].gone) {
             items.splice(Number(i), 1);
+            if (i < debug.selectedItem) {
+                debug.selectedItem--;
+            } else if (i === debug.selectedItem) {
+                debug.selectedItem = -1;
+            }
         }
     }
 
@@ -846,7 +864,7 @@ document.onkeyup = () => {
 
 function pay() {
     addMoney(Math.random() * settings.maxPaycheckValue, "Paycheck", "+");
-    setTimeout(pay, settings.paycheckTime * 1000);
+    debug.paycheckInterval = setTimeout(pay, settings.paycheckTime * 1000);
 }
 
 pay();
