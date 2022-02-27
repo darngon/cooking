@@ -22,7 +22,7 @@
 </div>
 <div id="game" style="display: none;">
     <div id="tooltip"
-         style="font-size: 75%; position: absolute; width: 256px; min-height: 192px; background: #80808080; display: none; border-radius: 20px; pointer-events: none; z-index: 2; overflow: hidden;"></div>
+         style="font-size: 75%; position: absolute; width: 256px; min-height: 192px; background: #80808080; display: none; border-radius: 20px; pointer-events: none; z-index: 2;"></div>
     <div id="kitchen">
         <div id="foodListBtn" class="foodList"
              style="border-radius: 3px; height: 80px; min-width: 40px; width: 40px; left: 50%; margin-left: -20px; position: absolute;"
@@ -137,10 +137,9 @@
         <input type="number" name="roomTemp" id="roomTemp">
     </div>
     <div id="orders" style="display: none;"><h1 style="font-size: 200%;">Orders</h1></div>
-    <div id="items" style="overflow: hidden;"></div>
-    <div id="tooSmallAlert" style="display: none; text-align: center;">
-        <h1>Warning!</h1>
-        <p>Your screen is not wide enough! Try rotating your device, using a computer, or zooming out.</p>
+    <div id="items"></div>
+    <div id="newOrderAlert" style="opacity: 0;">
+        <span style="display: table-cell; vertical-align: middle;">New Order!</span>
     </div>
 </div>
 <script src="toNumberName.js"></script>

@@ -276,3 +276,17 @@ input[type=number] {
 .order:hover {
     background: #ffffff20;
 }
+
+#newOrderAlert {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: #808000;
+    width: 120px;
+    height: 40px;
+    display: table;
+    vertical-align: middle;
+    border-radius: 20px;
+    pointer-events: none;
+    transition: opacity 500ms;
+}

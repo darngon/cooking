@@ -153,6 +153,10 @@ function randomFood(includeLiquids) {
 }
 
 function getOrder() {
+    document.getElementById("newOrderAlert").style.opacity = "1";
+    setTimeout(() => {
+        document.getElementById("newOrderAlert").style.opacity = "0";
+    }, 5000);
     let ingredients = [];
     for (let i = 0; i < Math.random() * player.skill; i++) {
         const a = randomFood(false);
@@ -178,8 +182,8 @@ function getOrder() {
 function serve(foodId, orderId) {
     let rating = 0;
     const ingredients = items[foodId].ingredients.sort((a, b) => {
-        const a1 = a.toUpperCase();
-        const b1 = b.toUpperCase();
+        const a1 = a.id.toUpperCase();
+        const b1 = b.id.toUpperCase();
         return a1 > b1 ? 1 : a1 < b1 ? -1 : 0;
     });
     const foodIds = ingredients.map(g => g.id);
@@ -219,7 +223,7 @@ function serve(foodId, orderId) {
     orders.splice(orderId, 1);
     rating /= 2;
     player.skill += rating / 20;
-    player.popularity += rating > 0.5 ? rating / 100 : -1 - rating / 100;
+    player.popularity += rating > 0.5 ? rating / 20 : -1 - rating / 20;
     items[foodId].gone = true;
     alert(`Rating: ${(rating * 5).toFixed(1)}☆ / 5.0☆`);
 
@@ -228,7 +232,7 @@ function serve(foodId, orderId) {
         cost += foods[i.id].price * i.mass / foods[i.id].mass;
     }
 
-    addMoney(Math.random() * cost * 2.1, "Customer Paid");
+    addMoney(Math.random() * cost * 3, "Customer Paid");
 }
 
 function makeRecipe(ingredients) {
