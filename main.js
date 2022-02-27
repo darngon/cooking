@@ -1,6 +1,6 @@
 let items = [];
 let player = {
-    money: 0,
+    money: 100,
     recentTransactions: [],
     popularity: 1,
     skill: 1
