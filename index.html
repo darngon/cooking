@@ -85,6 +85,10 @@
         <p id="depositText">Deposit</p>
         <p id="depositAllText">Deposit All</p>
         <div id="recentTransactions"></div>
+        <div id="stats" style="position: absolute; bottom: 0; right: 8px;">
+            <p>Popularity: 1</p>
+            <p>Skill: 1</p>
+        </div>
     </div>
     <div id="config" style="display: none;">
         <label for="settings" style="font-size: 32px;">Settings</label>
@@ -133,7 +137,7 @@
         <input type="number" name="roomTemp" id="roomTemp">
     </div>
     <div id="orders" style="display: none;"><h1 style="font-size: 200%;">Orders</h1></div>
-    <div id="items"></div>
+    <div id="items" style="overflow: hidden;"></div>
     <div id="tooSmallAlert" style="display: none; text-align: center;">
         <h1>Warning!</h1>
         <p>Your screen is not wide enough! Try rotating your device, using a computer, or zooming out.</p>

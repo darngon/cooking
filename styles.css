@@ -263,10 +263,16 @@ input[type=number] {
 }
 
 .order {
+    background: #ffffff10;
     display: inline-block;
     border-style: solid;
     border-width: 5px;
-    border-color: #304;
+    border-color: #ffffff30;
     border-radius: 8px;
     margin: 5px 5px 5px 5px;
+    transition: background 250ms;
+}
+
+.order:hover {
+    background: #ffffff20;
 }

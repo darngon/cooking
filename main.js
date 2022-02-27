@@ -118,7 +118,7 @@ function start(loadSave) {
 // settings.foods = foods;
 
 for (const s in settings) {
-    document.getElementById(s).setAttribute("onchange", `settings['${s}'] = this.type === "checkbox" ? this.checked : this.value; if ("${document.getElementById(s).type}" === "number") settings['${s}'] = Number(settings['${s}']); updateSettings();`);
+    document.getElementById(s).setAttribute("onchange", `settings['${s}'] = this.type === "checkbox" ? this.checked : this.value; if ("${document.getElementById(s).type}" === "number") settings['${s}'] = Number(settings['${s}']); reload(true);`);
 }
 
 for (const i in animations) {
@@ -177,7 +177,11 @@ function getOrder() {
 
 function serve(foodId, orderId) {
     let rating = 0;
-    const {ingredients} = items[foodId];
+    const ingredients = items[foodId].ingredients.sort((a, b) => {
+        const a1 = a.toUpperCase();
+        const b1 = b.toUpperCase();
+        return a1 > b1 ? 1 : a1 < b1 ? -1 : 0;
+    });
     const foodIds = ingredients.map(g => g.id);
     const orderIds = orders[orderId].ingredients.map(g => g.id);
     const commonIngredients = foodIds.filter(g => orderIds.includes(g));
@@ -218,7 +222,13 @@ function serve(foodId, orderId) {
     player.popularity += rating > 0.5 ? rating / 100 : -1 - rating / 100;
     items[foodId].gone = true;
     alert(`Rating: ${(rating * 5).toFixed(1)}☆ / 5.0☆`);
-    addMoney(rating * 20 * Math.random() * ingredients.length, "Customer Paid");
+
+    let cost = 0;
+    for (const i of ingredients) {
+        cost += foods[i.id].price * i.mass / foods[i.id].mass;
+    }
+
+    addMoney(Math.random() * cost * 2.1, "Customer Paid");
 }
 
 function makeRecipe(ingredients) {
@@ -352,12 +362,17 @@ function buy(id) {
     toggleFoodList(true);
 }
 
-function reload() {
+function reload(onlyFoodList) {
+    if (onlyFoodList === undefined) onlyFoodList = false;
     updateSettings();
-    let debugImgOutput = "";
-    for (const f in foods) debugImgOutput += `<img alt="${f}" src='img/food/${f}.png' onload="if (foods['${f}'] === undefined) foods.${f} = {}; foods.${f}.imgAvailable = true;">`;
-    for (const f of debug.otherFoodTextures) debugImgOutput += `<img alt="${f}" src='img/food/${f}.png' onload="if (foods['${f}'] === undefined) foods.${f} = {}; foods.${f}.imgAvailable = true;">`;
-    document.getElementById("debugCheckImg").innerHTML = debugImgOutput;
+    if (!onlyFoodList) {
+        let debugImgOutput = "";
+        for (const f of debug.otherFoodTextures)
+            debugImgOutput += `<img alt="${f}" src='img/food/${f}.png' onload="if (foods['${f}'] === undefined) foods.${f} = {}; foods.${f}.imgAvailable = true;">`;
+        for (const f in foods)
+            debugImgOutput += `<img alt="${f}" src='img/food/${f}.png' onload="if (foods['${f}'] === undefined) foods.${f} = {}; foods.${f}.imgAvailable = true;">`;
+        document.getElementById("debugCheckImg").innerHTML = debugImgOutput;
+    }
     let foodList = `<img alt='Back' class='backBtn' onmousedown='if (debug.foodListLocation !== "none") showGroup("none"); else toggleFoodList();' src='img/back.png'><div id='foodGroupList'>`;
     debug.groups = {};
     for (const i in foods) {
@@ -1051,7 +1066,6 @@ setInterval(() => {
             orders.splice(Number(o), 1);
             alert(`You ran out of time to serve Order #${orders[o].id}!`);
             player.popularity -= 0.1;
-            if (player.popularity < 1) player.popularity = 1;
         }
         output += `<div class="order" onclick="serve(debug.selectedItem, ${o});"><h1>Order #${orders[o].id}</h1><p>${format("time", orders[o].time)}</p>`;
         for (const i of orders[o].ingredients)
@@ -1060,7 +1074,9 @@ setInterval(() => {
     }
     if (orders.length === 0)
         output += "<p>No orders yet</p>";
+    if (player.popularity < 1) player.popularity = 1;
     document.getElementById("orders").innerHTML = output;
+    document.getElementById("stats").innerHTML = `<p>Popularity: ${player.popularity.toLocaleString()}</p><p>Skill: ${player.skill.toLocaleString()}</p>`;
 }, 1000);
 
 reload();
