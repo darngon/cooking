@@ -16,9 +16,9 @@
     </p>
     <b>FOR BEGINNERS: IMPORTANT THAT YOU READ TOOLTIPS!</b>
     <p>You can press arrow keys to go to different areas</p>
-    <button style="width: 20%;" onclick="start(false);">New Game</button>
+    <button style="width: 20%;" onmousedown="start(false);">New Game</button>
     <br>
-    <button style="width: 20%; display: none;" onclick="start(true);" id="loadGameBtn">Load Game</button>
+    <button style="width: 20%; display: none;" onmousedown="start(true);" id="loadGameBtn">Load Game</button>
 </div>
 <div id="game" style="display: none;">
     <div id="tooltip"
@@ -80,8 +80,10 @@
         <img src="img/wallet.png" alt="Wallet" style="position: absolute; left: 0; width: 512px; z-index: 0;"
              onmousemove="debug.tooltips.wallet();" onmouseout="hideTooltip();"
              onmousedown="if (foods[items[debug.selectedItem].id].group === 'Money') {items[debug.selectedItem].location = 'wallet'; debug.selectedItem = -1;}">
-        <canvas height="128" width="128" id="depositCanvas" onclick="deposit();"></canvas>
+        <canvas height="128" width="128" id="depositCanvas" onmousedown="deposit();"></canvas>
+        <canvas height="128" width="128" id="depositAllCanvas" onmousedown="depositAll();"></canvas>
         <p id="depositText">Deposit</p>
+        <p id="depositAllText">Deposit All</p>
         <div id="recentTransactions"></div>
     </div>
     <div id="config" style="display: none;">

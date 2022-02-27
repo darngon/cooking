@@ -233,13 +233,30 @@ input[type=number] {
     position: absolute;
     top: 8px;
     right: 8px;
+    transition: filter 250ms;
 }
 
-#depositText {
+#depositAllCanvas {
+    position: absolute;
+    top: 136px;
+    right: 8px;
+    transition: filter 250ms;
+}
+
+#depositCanvas:hover, #depositAllCanvas:hover {
+    filter: brightness(200%);
+}
+
+#depositText, #depositAllText {
     position: absolute;
     top: 32px;
     right: 32px;
     font-size: 24px;
     z-index: 100;
     pointer-events: none;
+}
+
+#depositAllText {
+    top: 160px;
+    right: 12px;
 }

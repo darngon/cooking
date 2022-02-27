@@ -89,16 +89,24 @@ let settings = {
 };
 
 if (localStorage.getItem("savedItems") !== null) document.getElementById("loadGameBtn").style.display = "";
-document.getElementById("icon").href = `img/food/${Object.keys(foods)[~~(Math.random() * Object.keys(foods).length)]}.png`;
+(() => {
+    let a = Object.keys(foods)[~~(Math.random() * Object.keys(foods).length)];
+    while (foods[a].group === "Money") a = Object.keys(foods)[~~(Math.random() * Object.keys(foods).length)];
+    document.getElementById("icon").href = `img/food/${a}.png`;
+})();
 
 function start(loadSave) {
     if (loadSave) load();
     document.getElementById("startScreen").style.display = "none";
     document.getElementById("game").style.display = "";
     const ctx = document.getElementById("depositCanvas").getContext("2d");
+    const ctx2 = document.getElementById("depositAllCanvas").getContext("2d");
     ctx.fillStyle = "#080";
     ctx.arc(64, 64, 64, 0, Math.PI * 2);
     ctx.fill();
+    ctx2.fillStyle = "#33f";
+    ctx2.arc(64, 64, 64, 0, Math.PI * 2);
+    ctx2.fill();
     setInterval(save, 5000);
 }
 
@@ -321,6 +329,12 @@ function load() {
 
 function toBills(n) {
     let output = [];
+    for (let i = 63; i > 33; i--) {
+        while (n >= 10 ** i) {
+            output.push(`e${i}`);
+            n -= 10 ** i;
+        }
+    }
     while (n >= 1e33) {
         output.push("decillion");
         n -= 1e33;
