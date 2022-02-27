@@ -67,7 +67,6 @@
 }
 
 body {
-    overflow: hidden;
     text-overflow: ellipsis;
     font-family: Nunito, sans-serif;
     color: white;
@@ -166,6 +165,8 @@ img {
 
 #kitchen {
     left: 0;
+    overflow-x: hidden;
+    overflow-y: hidden;
     transition: left 500ms, top 500ms;
 }
 
@@ -259,4 +260,13 @@ input[type=number] {
 #depositAllText {
     top: 160px;
     right: 12px;
+}
+
+.order {
+    display: inline-block;
+    border-style: solid;
+    border-width: 5px;
+    border-color: #304;
+    border-radius: 8px;
+    margin: 5px 5px 5px 5px;
 }
