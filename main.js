@@ -85,7 +85,7 @@ let settings = {
     paycheckTime: 600,
     textColor: "#fff",
     tooltipsEnabled: true,
-    units: "imperial",
+    units: "metric",
     foodRottingSpeed: 1,
     cookSpeed: 1,
     minCookingTemperature: 120,
@@ -438,7 +438,7 @@ function load() {
 
 function toBills(n) {
     let output = [];
-    for (let i = 63; i > 33; i--) {
+    for (let i = 153; i > 33; i--) {
         while (n >= 10 ** i) {
             output.push(`e${i}`);
             n -= 10 ** i;
