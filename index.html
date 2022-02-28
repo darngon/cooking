@@ -135,8 +135,11 @@
         <br>
         <label for="roomTemp">Room Temperature (F):</label>
         <input type="number" name="roomTemp" id="roomTemp">
+        <br>
+        <label for="priceMultiplier">Customer Payment Multiplier:</label>
+        <input type="number" name="priceMultiplier" id="priceMultiplier">
     </div>
-    <div id="orders" style="display: none;"><h1 style="font-size: 200%;">Orders</h1></div>
+    <div id="orders" style="display: none; overflow-y: auto; height: 100vh;"><h1 style="font-size: 200%;">Orders</h1></div>
     <div id="items"></div>
     <div id="newOrderAlert" style="opacity: 0;">
         <span style="display: table-cell; vertical-align: middle;">New Order!</span>

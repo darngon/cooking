@@ -67,6 +67,7 @@
 }
 
 body {
+    overflow: hidden;
     text-overflow: ellipsis;
     font-family: Nunito, sans-serif;
     color: white;
@@ -115,6 +116,15 @@ button:hover {
 
 .foodListItem:hover {
     color: #11d51d;
+}
+
+.cantAfford {
+    color: #bbb;
+    cursor: default;
+}
+
+.cantAfford:hover {
+    color: #bbb;
 }
 
 fieldset {
@@ -279,6 +289,7 @@ input[type=number] {
 
 #newOrderAlert {
     position: absolute;
+    font-size: 64px;
     top: 0;
     right: 0;
     background: #80800080;

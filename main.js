@@ -71,6 +71,7 @@ let debug = {
     },
     otherFoodTextures: [
         "custom",
+        "empty",
         "transparent",
         "unknown",
         "unknownPowder"
@@ -89,7 +90,8 @@ let settings = {
     foodRottingSpeed: 1,
     cookSpeed: 1,
     minCookingTemperature: 120,
-    roomTemp: 72
+    roomTemp: 72,
+    priceMultiplier: 1
 };
 let orders = [];
 
@@ -130,8 +132,9 @@ for (const i in animations) {
     }, 1000 / animations[i].fps);
 }
 
-function updateSettings() {
-    clearTimeout(debug.paycheckInterval);
+function updateSettings(clear) {
+    if (clear === undefined) clear = true;
+    if (clear) clearTimeout(debug.paycheckInterval);
     for (const s in settings) {
         document.getElementById(s).value = settings[s];
         if (document.getElementById(s).type === "checkbox") document.getElementById(s).checked = settings[s];
@@ -141,7 +144,7 @@ function updateSettings() {
     settings.foods = foods; */
     document.body.style.background = settings.background;
     document.body.style.color = settings.textColor;
-    pay();
+    if (clear) pay();
 }
 
 function randomFood(includeLiquids) {
@@ -236,7 +239,7 @@ function serve(foodId, orderId) {
         cost += foods[i.id].price * i.mass / foods[i.id].mass;
     }
 
-    addMoney(Math.random() * cost * 3, "Customer Paid");
+    addMoney(Math.random() * cost * 3 * settings.priceMultiplier, "Customer Paid");
 }
 
 function makeRecipe(ingredients) {
@@ -318,14 +321,14 @@ function makeRecipe(ingredients) {
 
     name += "Meal";
 
-    if (confirm("You made a new food! Would you like to name it?")) {
+    if (ingredients.length > 0 && confirm("You made a new food! Would you like to name it?")) {
         name = prompt("What do you want to name your food?");
     }
 
     console.log(ingredients.map(e => e.cooked));
     console.log(ingredients.map(e => e.cooked1));
 
-    items.push(new food("custom", true, cookSpeed, cooked, mass, undefined, temp, name, undefined, ingredients));
+    items.push(new food(ingredients.length > 0 ? "custom" : "empty", true, cookSpeed, ingredients.length > 0 ? cooked : 0, mass, undefined, ingredients.length > 0 ? temp : 72, ingredients.length > 0 ? name : "Empty Plate", undefined, ingredients));
 }
 
 function toggleFoodList(close) {
@@ -374,7 +377,7 @@ function buy(id) {
 
 function reload(onlyFoodList) {
     if (onlyFoodList === undefined) onlyFoodList = false;
-    updateSettings();
+    updateSettings(false);
     if (!onlyFoodList) {
         let debugImgOutput = "";
         for (const f of debug.otherFoodTextures)
@@ -392,17 +395,22 @@ function reload(onlyFoodList) {
         if (!foods[i].unavailable && !exists) debug.groups[foods[i].group].push({name: foods[i].name, id: i});
     }
 
+    delete debug.groups.undefined;
+
     const groupList = Object.keys(debug.groups);
     groupList.sort();
 
-    for (const g of groupList) foodList += `<h2 onmousedown="showGroup('${g}')" class="foodListItem">${g}</h2>`;
+    for (const g of groupList)
+        foodList += `<h2 onmousedown="showGroup('${g}')" class="foodListItem">${g}</h2>`;
     foodList += "</div>";
 
     for (const j of groupList) {
         foodList += `<div id="foodGroup_${j}"><h2 onmousedown="showGroup('none');" class="foodListItem">${j}</h2>`;
         for (let i of debug.groups[j]) {
             i = i.id;
-            foodList += `<p class="foodListItem" title="${foods[i].name}" onmousedown="buy('${i}');">${foods[i].name}${foods[i].mass !== undefined ? ` | ${format("mass", foods[i].mass)}` : ""}${foods[i].volume !== undefined ? ` | ${format("volume", foods[i].volume)}` : ""} | ${foods[i].price !== undefined ? "$" + format("money", foods[i].price) : "$5.00"}</p>`;
+            let classNames = "foodListItem";
+            if (player.money < foods[i].price) classNames += " cantAfford";
+            foodList += `<p class="${classNames}" title="${foods[i].name}" onmousedown="buy('${i}');">${foods[i].name}${foods[i].mass !== undefined ? ` | ${format("mass", foods[i].mass)}` : ""}${foods[i].volume !== undefined ? ` | ${format("volume", foods[i].volume)}` : ""} | ${foods[i].price !== undefined ? format("money", foods[i].price) : "$5.00"}</p>`;
         }
         foodList += `</div>`;
     }
@@ -438,7 +446,11 @@ function load() {
 
 function toBills(n) {
     let output = [];
-    for (let i = 153; i > 33; i--) {
+    if (n >= Infinity) {
+        output.push("infinitibuck");
+        n = 0;
+    }
+    for (let i = 307; i > 33; i--) {
         while (n >= 10 ** i) {
             output.push(`e${i}`);
             n -= 10 ** i;
@@ -852,10 +864,21 @@ function format(type, value) {
             return "";
         }
     } else if (type === "money") {
-        if (Math.abs(value) === Infinity) {
-            return "Infinity";
+        if (Math.abs(value) >= 1e308) {
+            // noinspection SpellCheckingInspection
+            return "1 Infinitibuck";
+        } else if (Math.abs(value) >= 1e281) {
+            return `${(value / Number(`1e${~~Math.log10(value)}`)).toFixed(2)} ${foods[`e${~~Math.log10(value)}`].name}`;
+        } else if (Math.abs(value) >= 1e217) {
+            return `${Math.round(Math.log10(value / 1e217)).toString(2).replaceAll("0", "○").replaceAll("1", "●")}`;
+        } else if (Math.abs(value) >= 1e202) {
+            return `${Math.log10(value / 1e201).toFixed(2)} Gooragonbucks`;
+        } else if (Math.abs(value) >= 1e172) {
+            return `${Math.log10(value / 1e173).toFixed(2)} Dragonbucks`;
+        } else if (Math.abs(value) >= 1e153) {
+            return `${Math.log10(value / 1e152).toFixed(2)} Goosebucks`;
         } else {
-            return toNumberName(value, true, 2);
+            return `$${toNumberName(value, true, 2)}`;
         }
     }
 }
@@ -877,7 +900,7 @@ function hideTooltip() {
 }
 
 function addMoney(amount, cause) {
-    player.recentTransactions.unshift(`<p style="color: ${amount > 0 ? "green" : amount < 0 ? "red" : "white"};">${cause} | ${amount > 0 ? "+" : amount < 0 ? "-" : ""}$${format("money", Math.abs(amount))}</p>`);
+    player.recentTransactions.unshift(`<p style="color: ${amount > 0 ? "green" : amount < 0 ? "red" : "white"};">${cause} | ${amount > 0 ? "+" : amount < 0 ? "-" : ""}${format("money", Math.abs(amount))}</p>`);
     while (player.recentTransactions.length > 10) {
         player.recentTransactions.pop();
     }
@@ -890,6 +913,7 @@ function addMoney(amount, cause) {
     } else {
         player.money += amount;
     }
+    reload(true);
 }
 
 function deposit() {
@@ -1070,7 +1094,7 @@ setInterval(() => {
     const index = items.indexOf(undefined);
     if (index > -1) items.splice(index, 1);
     document.getElementById("items").innerHTML = `${output}`;
-    document.getElementById("money").innerHTML = `Money: $${format("money", player.money)}`;
+    document.getElementById("money").innerHTML = `Money: ${format("money", player.money)}`;
     document.getElementById("recipeMaker").innerHTML = `<legend>Plate</legend>${output2 !== "" ? `<button onmousedown="makeRecipe(debug.ingredients); for (const x in debug.ingredients) debug.ingredients[x].gone = true;">Create Food</button>` : ""}${output2}`;
 }, 50);
 
@@ -1184,8 +1208,6 @@ document.getElementById("autoCutter").onwheel = e => {
 document.onkeyup = () => {
     debug.holdingShift = false;
 }
-
-// THIS IS TEMPORARY
 
 function pay() {
     if (settings.paychecksEnabled) {
