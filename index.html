@@ -80,10 +80,15 @@
         <img src="img/wallet.png" alt="Wallet" style="position: absolute; left: 0; width: 512px; z-index: 0;"
              onmousemove="debug.tooltips.wallet();" onmouseout="hideTooltip();"
              onmousedown="if (foods[items[debug.selectedItem].id].group === 'Money') {items[debug.selectedItem].location = 'wallet'; debug.selectedItem = -1;}">
-        <canvas height="128" width="128" id="depositCanvas" onmousedown="deposit();"></canvas>
-        <canvas height="128" width="128" id="depositAllCanvas" onmousedown="depositAll();"></canvas>
-        <p id="depositText">Deposit</p>
-        <p id="depositAllText">Deposit All</p>
+        <div id="depositBtn" onmousedown="deposit();">
+            <p style="display: table-cell; vertical-align: middle;">Deposit</p>
+        </div>
+        <div id="depositAllBtn" onmousedown="depositAll();">
+            <p style="display: table-cell; vertical-align: middle;">Deposit All</p>
+        </div>
+        <div id="withdrawAllBtn" onmousedown="addMoney(player.money, 'Withdraw'); player.money = 0;">
+            <p style="display: table-cell; vertical-align: middle;">Withdraw All</p>
+        </div>
         <div id="recentTransactions"></div>
         <div id="stats" style="position: absolute; bottom: 0; right: 8px;">
             <p>Popularity: 1</p>
@@ -139,7 +144,8 @@
         <label for="priceMultiplier">Customer Payment Multiplier:</label>
         <input type="number" name="priceMultiplier" id="priceMultiplier">
     </div>
-    <div id="orders" style="display: none; overflow-y: auto; height: 100vh;"><h1 style="font-size: 200%;">Orders</h1></div>
+    <div id="orders" style="display: none; overflow-y: auto; height: 100vh;"><h1 style="font-size: 200%;">Orders</h1>
+    </div>
     <div id="items"></div>
     <div id="newOrderAlert" style="opacity: 0;">
         <span style="display: table-cell; vertical-align: middle;">New Order!</span>

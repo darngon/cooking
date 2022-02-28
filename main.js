@@ -105,14 +105,6 @@ function start(loadSave) {
     if (loadSave) load();
     document.getElementById("startScreen").style.display = "none";
     document.getElementById("game").style.display = "";
-    const ctx = document.getElementById("depositCanvas").getContext("2d");
-    const ctx2 = document.getElementById("depositAllCanvas").getContext("2d");
-    ctx.fillStyle = "#080";
-    ctx.arc(64, 64, 64, 0, Math.PI * 2);
-    ctx.fill();
-    ctx2.fillStyle = "#33f";
-    ctx2.arc(64, 64, 64, 0, Math.PI * 2);
-    ctx2.fill();
     reload();
     setInterval(save, 5000);
 }
@@ -386,9 +378,15 @@ function reload(onlyFoodList) {
             debugImgOutput += `<img alt="${f}" src='img/food/${f}.png' onload="if (foods['${f}'] === undefined) foods.${f} = {}; foods.${f}.imgAvailable = true;">`;
         document.getElementById("debugCheckImg").innerHTML = debugImgOutput;
     }
+    createFoodList();
+}
+
+function createFoodList() {
     let foodList = `<img alt='Back' class='backBtn' onmousedown='if (debug.foodListLocation !== "none") showGroup("none"); else toggleFoodList();' src='img/back.png'><div id='foodGroupList'>`;
     debug.groups = {};
     for (const i in foods) {
+        if (foods[i].group === "Money") foods[i].condition = `player.money >= foods["${i}"].price`;
+        if (foods[i].condition !== undefined) foods[i].unavailable = !eval(foods[i].condition);
         if (debug.groups[foods[i].group] === undefined && !foods[i].unavailable) debug.groups[foods[i].group] = [];
         let exists = false;
         for (const g of debug.groups[foods[i].group]) if (g.id === foods[i].id) exists = true;
@@ -1103,9 +1101,9 @@ setInterval(() => {
     for (const o in orders) {
         orders[o].time--;
         if (orders[o].time <= 0) {
-            orders.splice(Number(o), 1);
             alert(`You ran out of time to serve Order #${orders[o].id}!`);
             player.popularity -= 0.1;
+            orders.splice(Number(o), 1);
         }
         output += `<div class="order" onclick="serve(debug.selectedItem, ${o});"><h1>Order #${orders[o].id}</h1><p>${format("time", orders[o].time)}</p>`;
         for (const i of orders[o].ingredients)
@@ -1115,6 +1113,7 @@ setInterval(() => {
     if (orders.length === 0)
         output += "<p>No orders yet</p>";
     if (player.popularity < 1) player.popularity = 1;
+    if (player.money === Infinity) player.money = Number.MAX_VALUE;
     document.getElementById("orders").innerHTML = output;
     document.getElementById("stats").innerHTML = `<p>Popularity: ${player.popularity.toLocaleString()}</p><p>Skill: ${player.skill.toLocaleString()}</p>`;
 }, 1000);
