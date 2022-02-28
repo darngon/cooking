@@ -201,7 +201,7 @@ function serve(foodId, orderId) {
 
     for (const f in ingredients) {
         ingredients[f].mass = ingredients[f].mass1;
-        const a = ingredients[f].cooked1 / ingredients[f].count;
+        const a = ingredients[f].cooked1 / ingredients[f].count1;
         let {ingredients: ingredients2} = orders[orderId];
         // fix this
         console.log(ingredients[f].mass);
@@ -250,11 +250,12 @@ function makeRecipe(ingredients) {
         ingredients2[i] = {};
         ingredients2[i].id = ingredients[i].id;
         ingredients2[i].mass = ingredients[i].mass1;
+        ingredients[i].count1 = ingredients[i].count;
         cookSpeed += ingredients[i].cookSpeed;
-        cooked += ingredients[i].cooked1 / ingredients[i].count;
+        cooked += ingredients[i].cooked1 / ingredients[i].count1;
         mass += ingredients[i].mass1;
         volume += ingredients[i].volume;
-        temp += ingredients[i].temp1 / ingredients[i].count;
+        temp += ingredients[i].temp1 / ingredients[i].count1;
 
         name += `${ingredients[i].name} `;
     }
@@ -313,12 +314,11 @@ function makeRecipe(ingredients) {
 
     name += "Meal";
 
-    if (ingredients.length > 0 && confirm("You made a new food! Would you like to name it?")) {
+    if (ingredients.length > 0 && confirm("You made a new food! Would you like to name it?"))
         name = prompt("What do you want to name your food?");
-    }
 
-    console.log(ingredients.map(e => e.cooked));
-    console.log(ingredients.map(e => e.cooked1));
+    console.log(ingredients);
+    console.log(ingredients2);
 
     items.push(new food(ingredients.length > 0 ? "custom" : "empty", true, cookSpeed, ingredients.length > 0 ? cooked : 0, mass, undefined, ingredients.length > 0 ? temp : 72, ingredients.length > 0 ? name : "Empty Plate", undefined, ingredients));
 }
