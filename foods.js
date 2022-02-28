@@ -167,7 +167,7 @@ let foods = {
     nickel: {name: "Nickel", group: "Money", mass: 1, price: 0.05},
     dime: {name: "Dime", group: "Money", mass: 1, price: 0.1},
     quarter: {name: "Quarter", group: "Money", mass: 1, price: 0.25},
-    fiftyCents: {name: "50 Cent Coin", group: "Money", mass: 1, price: 0.5},
+    fiftyCents: {name: "Half-Dollar", group: "Money", mass: 1, price: 0.5},
     one: {name: "$1 Bill", group: "Money", mass: 1, price: 1},
     two: {name: "$2 Bill", group: "Money", mass: 1, price: 2},
     five: {name: "$5 Bill", group: "Money", mass: 1, price: 5},

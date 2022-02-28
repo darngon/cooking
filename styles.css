@@ -281,12 +281,12 @@ input[type=number] {
     position: absolute;
     top: 0;
     right: 0;
-    background: #808000;
-    width: 120px;
-    height: 40px;
+    background: #80800080;
+    width: 480px;
+    height: 160px;
     display: table;
     vertical-align: middle;
-    border-radius: 20px;
+    border-radius: 80px;
     pointer-events: none;
     transition: opacity 500ms;
 }

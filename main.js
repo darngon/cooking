@@ -162,7 +162,8 @@ function getOrder() {
         const a = randomFood(false);
         ingredients.push({
             id: a,
-            mass: foods[a].mass !== undefined ? ~~(Math.random() * 9 + 1) * foods[a].mass : undefined
+            mass: foods[a].mass !== undefined ? ~~(Math.random() * 9 + 1) * foods[a].mass : undefined,
+            cooked: Math.random() * 200
         });
     }
     ingredients.sort((a, b) => {
@@ -174,7 +175,7 @@ function getOrder() {
     orders.push({
         id: debug.orderId,
         ingredients: ingredients.filter(({id}, index) => !ingredients.map(o => o.id).includes(id, index + 1)),
-        time: ~~(Math.random() * 300 + 300)
+        time: ~~(Math.random() * 600 + 600)
     });
     setTimeout(getOrder, Math.random() * 300000 / player.popularity);
 }
@@ -205,11 +206,14 @@ function serve(foodId, orderId) {
 
     for (const f in ingredients) {
         ingredients[f].mass = ingredients[f].mass1;
+        const a = ingredients[f].cooked1 / ingredients[f].count;
         let {ingredients: ingredients2} = orders[orderId];
         // fix this
         console.log(ingredients[f].mass);
         console.log(ingredients2[f].mass);
         ingredients[f].rating = 5 * ingredients[f].mass > ingredients2[f].mass ? 2 ** -Math.abs(ingredients[f].mass / ingredients2[f].mass - 1) : ingredients[f].mass < ingredients2[f].mass ? 2 ** -Math.abs(ingredients2[f].mass / ingredients[f].mass - 1) : 1;
+        ingredients[f].rating += 5 * a > ingredients2[f].cooked ? 2 ** -Math.abs(a / ingredients2[f].cooked - 1) : a < ingredients2[f].cooked ? 2 ** -Math.abs(ingredients2[f].cooked / a - 1) : 1;
+        ingredients[f].rating /= 2;
         r += ingredients[f].rating;
     }
 
@@ -251,12 +255,11 @@ function makeRecipe(ingredients) {
         ingredients2[i] = {};
         ingredients2[i].id = ingredients[i].id;
         ingredients2[i].mass = ingredients[i].mass1;
-
         cookSpeed += ingredients[i].cookSpeed;
-        cooked += ingredients[i].cooked;
+        cooked += ingredients[i].cooked1 / ingredients[i].count;
         mass += ingredients[i].mass1;
         volume += ingredients[i].volume;
-        temp += ingredients[i].temp;
+        temp += ingredients[i].temp1 / ingredients[i].count;
 
         name += `${ingredients[i].name} `;
     }
@@ -318,6 +321,9 @@ function makeRecipe(ingredients) {
     if (confirm("You made a new food! Would you like to name it?")) {
         name = prompt("What do you want to name your food?");
     }
+
+    console.log(ingredients.map(e => e.cooked));
+    console.log(ingredients.map(e => e.cooked1));
 
     items.push(new food("custom", true, cookSpeed, cooked, mass, undefined, temp, name, undefined, ingredients));
 }
@@ -989,6 +995,9 @@ setInterval(() => {
                             k.mass1 += items[i].mass !== undefined ? Number(items[i].mass) : 0;
                             k.volume1 += items[i].volume !== undefined ? Number(items[i].volume) : 0;
                         }
+                        k.count++;
+                        k.cooked1 += items[i].cooked;
+                        k.temp1 += items[i].temp;
                         items[i].addedProperties = true;
                     }
                 }
@@ -998,6 +1007,9 @@ setInterval(() => {
 
             if (!exists) {
                 debug.ingredients.push(items[i]);
+                debug.ingredients[debug.ingredients.length - 1].cooked1 = 0;
+                debug.ingredients[debug.ingredients.length - 1].temp1 = 0;
+                debug.ingredients[debug.ingredients.length - 1].count = 0;
                 loop();
             }
         }
@@ -1073,7 +1085,7 @@ setInterval(() => {
         }
         output += `<div class="order" onclick="serve(debug.selectedItem, ${o});"><h1>Order #${orders[o].id}</h1><p>${format("time", orders[o].time)}</p>`;
         for (const i of orders[o].ingredients)
-            output += `<p>${foods[i.id].name} | ${format("mass", i.mass)}</p>`;
+            output += `<p>${foods[i.id].name} | ${format("mass", i.mass)} | ${format("number", i.cooked)}% Cooked</p>`;
         output += `</div>`;
     }
     if (orders.length === 0)
