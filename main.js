@@ -251,6 +251,7 @@ function makeRecipe(ingredients) {
         ingredients2[i].id = ingredients[i].id;
         ingredients2[i].mass = ingredients[i].mass1;
         ingredients[i].count1 = ingredients[i].count;
+        ingredients[i].cooked1 = ingredients[i].cooked;
         cookSpeed += ingredients[i].cookSpeed;
         cooked += ingredients[i].cooked1 / ingredients[i].count1;
         mass += ingredients[i].mass1;
@@ -1019,7 +1020,7 @@ setInterval(() => {
                             k.volume1 += items[i].volume !== undefined ? Number(items[i].volume) : 0;
                         }
                         k.count++;
-                        k.cooked1 += items[i].cooked;
+                        k.cooked += items[i].cooked;
                         k.temp1 += items[i].temp;
                         items[i].addedProperties = true;
                     }
@@ -1030,7 +1031,7 @@ setInterval(() => {
 
             if (!exists) {
                 debug.ingredients.push(items[i]);
-                debug.ingredients[debug.ingredients.length - 1].cooked1 = 0;
+                debug.ingredients[debug.ingredients.length - 1].cooked = 0;
                 debug.ingredients[debug.ingredients.length - 1].temp1 = 0;
                 debug.ingredients[debug.ingredients.length - 1].count = 0;
                 loop();
