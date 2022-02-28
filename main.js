@@ -385,11 +385,14 @@ function createFoodList() {
     let foodList = `<img alt='Back' class='backBtn' onmousedown='if (debug.foodListLocation !== "none") showGroup("none"); else toggleFoodList();' src='img/back.png'><div id='foodGroupList'>`;
     debug.groups = {};
     for (const i in foods) {
-        if (foods[i].group === "Money") foods[i].condition = `player.money >= foods["${i}"].price`;
+        if (foods[i].condition === undefined) foods[i].condition = `player.money >= foods["${i}"].price`;
         if (foods[i].condition !== undefined) foods[i].unavailable = !eval(foods[i].condition);
         if (debug.groups[foods[i].group] === undefined && !foods[i].unavailable) debug.groups[foods[i].group] = [];
         let exists = false;
-        for (const g of debug.groups[foods[i].group]) if (g.id === foods[i].id) exists = true;
+        if (!foods[i].unavailable)
+            for (const g of debug.groups[foods[i].group])
+                if (g.id === foods[i].id)
+                    exists = true;
         if (!foods[i].unavailable && !exists) debug.groups[foods[i].group].push({name: foods[i].name, id: i});
     }
 
@@ -406,9 +409,7 @@ function createFoodList() {
         foodList += `<div id="foodGroup_${j}"><h2 onmousedown="showGroup('none');" class="foodListItem">${j}</h2>`;
         for (let i of debug.groups[j]) {
             i = i.id;
-            let classNames = "foodListItem";
-            if (player.money < foods[i].price) classNames += " cantAfford";
-            foodList += `<p class="${classNames}" title="${foods[i].name}" onmousedown="buy('${i}');">${foods[i].name}${foods[i].mass !== undefined ? ` | ${format("mass", foods[i].mass)}` : ""}${foods[i].volume !== undefined ? ` | ${format("volume", foods[i].volume)}` : ""} | ${foods[i].price !== undefined ? format("money", foods[i].price) : "$5.00"}</p>`;
+            foodList += `<p class="foodListItem" title="${foods[i].name}" onmousedown="buy('${i}');">${foods[i].name}${foods[i].mass !== undefined ? ` | ${format("mass", foods[i].mass)}` : ""}${foods[i].volume !== undefined ? ` | ${format("volume", foods[i].volume)}` : ""} | ${foods[i].price !== undefined ? format("money", foods[i].price) : "$5.00"}</p>`;
         }
         foodList += `</div>`;
     }
