@@ -243,7 +243,7 @@ input[type=number] {
 #depositBtn, #depositAllBtn, #withdrawAllBtn {
     display: table;
     text-align: center;
-    border-radius: 64px;
+    border-radius: 50%;
     width: 128px;
     height: 128px;
     position: absolute;
@@ -278,23 +278,83 @@ input[type=number] {
     border-radius: 8px;
     margin: 5px 5px 5px 5px;
     transition: background 250ms;
+    width: 20%;
+    height: 240px;
+    overflow: auto;
 }
 
 .order:hover {
     background: #ffffff20;
 }
 
-#newOrderAlert {
+#alert {
     position: absolute;
-    font-size: 64px;
+    font-size: 20px;
     top: 0;
     right: 0;
     background: #80800080;
-    width: 480px;
-    height: 160px;
+    width: 240px;
+    min-height: 80px;
     display: table;
-    vertical-align: middle;
-    border-radius: 80px;
+    border-radius: 50vh 0 0 50vh;
     pointer-events: none;
     transition: opacity 500ms;
+}
+
+#alert span {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.upgrade {
+    display: flex;
+    align-items: center;
+    position: relative;
+    left: 25%;
+    width: 50%;
+    height: 5%;
+    border-radius: 50vh;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #fff;
+}
+
+.upgrade:hover {
+    filter: brightness(125%);
+}
+
+.common {
+    background: linear-gradient(90deg, #888, #000);
+}
+
+.uncommon {
+    background: linear-gradient(90deg, #080, #000);
+}
+
+.rare {
+    background: linear-gradient(90deg, #008, #000);
+}
+
+.epic {
+    background: linear-gradient(90deg, #808, #000);
+}
+
+.legendary {
+    background: linear-gradient(90deg, #860, #000);
+}
+
+.elite {
+    background: linear-gradient(90deg, #800, #000);
+}
+
+.mythical {
+    background: linear-gradient(90deg, #088, #000);
+}
+
+.premium {
+    background: linear-gradient(90deg, #884, #000);
+}
+
+.godTier {
+    background: linear-gradient(90deg, #f80, #000);
 }

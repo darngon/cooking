@@ -77,7 +77,7 @@
     </div>
     <div id="bank" style="display: none;">
         <h1 id="money">Money: $100</h1>
-        <img src="img/wallet.png" alt="Wallet" style="position: absolute; left: 0; width: 512px; z-index: 0;"
+        <img src="img/wallet.png" alt="Wallet" style="position: absolute; left: 0; width: 256px; z-index: 0;"
              onmousemove="debug.tooltips.wallet();" onmouseout="hideTooltip();"
              onmousedown="if (foods[items[debug.selectedItem].id].group === 'Money') {items[debug.selectedItem].location = 'wallet'; debug.selectedItem = -1;}">
         <div id="depositBtn" onmousedown="deposit();">
@@ -93,13 +93,15 @@
         <div id="stats" style="position: absolute; bottom: 0; right: 8px;">
             <p>Popularity: 1</p>
             <p>Skill: 1</p>
+            <p>Total Earnings: $100.00</p>
         </div>
     </div>
+    <div id="upgrades" style="display: none; overflow-y: auto; height: 98vh;"><h1 onmousemove="debug.tooltips.modifiers();">Upgrades</h1></div>
     <div id="config" style="display: none;">
         <label for="settings" style="font-size: 32px;">Settings</label>
         <textarea id="settings" style="display: none;" spellcheck="false"
-                  onchange="settings = JSON.parse(this.value); reload();"
-                  onclick="debug.editingSettings = true;" oninput="debug.editingSettings = true;"></textarea>
+                  onchange="settings = JSON.parse(this.value); reload();" onclick="debug.editingSettings = true;"
+                  oninput="debug.editingSettings = true;"></textarea>
         <br>
         <br>
         <label for="background">Background Color:</label>
@@ -147,13 +149,13 @@
     <div id="orders" style="display: none; overflow-y: auto; height: 100vh;"><h1 style="font-size: 200%;">Orders</h1>
     </div>
     <div id="items"></div>
-    <div id="newOrderAlert" style="opacity: 0;">
+    <div id="alert" style="opacity: 0;">
         <span style="display: table-cell; vertical-align: middle;">New Order!</span>
     </div>
 </div>
-<script src="toNumberName.js"></script>
-<script src="foods.js"></script>
-<script src="recipes.js"></script>
-<script src="main.js"></script>
+<script src="js/toNumberName.js"></script>
+<script src="js/foods.js"></script>
+<script src="js/recipes.js"></script>
+<script src="js/main.js"></script>
 </body>
 </html>
