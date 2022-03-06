@@ -1009,8 +1009,8 @@ document.onmousedown = () => {
 
 document.oncontextmenu = () => {
     document.getElementById('controls').style.display = '';
-    document.getElementById('controls').style.left = `${debug.mouseX - 18}px`;
-    document.getElementById('controls').style.top = `${debug.mouseY - 18}px`;
+    document.getElementById('controls').style.left = `${debug.mouseX / debug.zoom - 18}px`;
+    document.getElementById('controls').style.top = `${debug.mouseY / debug.zoom - 18}px`;
     return false;
 }
 
