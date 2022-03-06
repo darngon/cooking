@@ -59,6 +59,7 @@ let foods = {
     ham: {name: "Ham", group: "Meats", mass: 500, price: 6},
     honeydew: {name: "Honeydew", group: "Fruits", mass: 2500, price: 3},
     horseradish: {name: "Horseradish", group: "Herbs / Spices", mass: 2000, price: 6},
+    humanMeat: {name: "Human Meat", group: "Human", mass: 2000, count: 0, price: 0, condition: "foods.humanMeat.count > 0"},
     jalapeno: {name: "Jalapeño", group: "Peppers", mass: 20, price: 2},
     lambChop: {name: "Lamb Chop", group: "Meats", mass: 100, price: 4},
     lasagna: {name: "Lasagna Noodles", group: "Pasta", mass: 10, price: 0.08},

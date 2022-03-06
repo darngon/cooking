@@ -1,4 +1,5 @@
 <!doctype html>
+<!--suppress HtmlFormInputWithoutLabel -->
 <html lang="en" oncontextmenu="return false;" onmouseout="hideTooltip();" ondragstart="return false;">
 <head>
     <meta charset="UTF-8">
@@ -16,46 +17,51 @@
     </p>
     <b>FOR BEGINNERS: IMPORTANT THAT YOU READ TOOLTIPS!</b>
     <p>You can press arrow keys to go to different areas</p>
-    <button style="width: 20%;" onmousedown="start(false);">New Game</button>
+    <button style="width: 20%;" class="mpBtn" onmousedown="hostServer();">Host Multiplayer Server (WIP)</button>
     <br>
-    <button style="width: 20%; display: none;" onmousedown="start(true);" id="loadGameBtn">Load Game</button>
+    <button style="width: 20%;" class="mpBtn" onmousedown="start(false, true);">Join Multiplayer Server (WIP)</button>
+    <br>
+    <button style="width: 20%;" onmousedown="start(false);">New Singleplayer Game</button>
+    <br>
+    <button style="width: 20%; display: none;" onmousedown="start(true);" id="loadGameBtn">Load Singleplayer Game</button>
 </div>
 <div id="game" style="display: none;">
     <div id="tooltip"
          style="font-size: 75%; position: absolute; width: 256px; min-height: 192px; background: #80808080; display: none; border-radius: 20px; pointer-events: none; z-index: 2;"></div>
     <div id="kitchen">
+        <div id="chat" style="display: none;"><div id="chatMsg"></div><input type="text" id="sendChatMsg" onkeydown="if (event.key === 'Enter') sendChatMsg();"></div>
         <div id="foodListBtn" class="foodList"
              style="border-radius: 3px; height: 80px; min-width: 40px; width: 40px; left: 50%; margin-left: -20px; position: absolute;"
              onmousedown="toggleFoodList();" onmousemove="debug.tooltips.foodList();" onmouseout="hideTooltip();"></div>
         <div id="stations">
             <img alt="Table" src="img/counter.png" id="counter" onmousemove="debug.tooltips.counter();"
-                 onmousedown="items[debug.selectedItem].location = 'counter'; debug.selectedItem = -1;">
+                 onmousedown="items[debug.selectedItem].location = 'counter'; debug.selectedItem = -1; sendUpdate();">
             <img id="oven" alt="Oven" src="img/oven.png" style="right: 0;" class="station"
                  onmousemove="debug.tooltips.oven();" onmouseout="hideTooltip();"
-                 onmousedown="if (debug.locations.oven < 3) items[debug.selectedItem].location = 'oven'; else alert('Your oven is full!'); debug.selectedItem = -1;">
+                 onmousedown="if (debug.locations.oven < 3) items[debug.selectedItem].location = 'oven'; else alert('Your oven is full!'); debug.selectedItem = -1; sendUpdate();">
             <img id="fridge" alt="Fridge" src="img/fridge.png" class="station" style="left: 0; z-index: -3;"
                  onmousemove="debug.tooltips.fridge();" onmouseout="hideTooltip();"
-                 onmousedown="if (debug.locations.fridge < 4) items[debug.selectedItem].location = 'fridge'; else alert('Your fridge is full!'); debug.selectedItem = -1;">
+                 onmousedown="if (debug.locations.fridge < 4) items[debug.selectedItem].location = 'fridge'; else alert('Your fridge is full!'); debug.selectedItem = -1; sendUpdate();">
             <img id="sun" alt="Sun" src="img/sun.png" style="right: 0; top: 128px; z-index: -1;" class="station"
                  onmousemove="debug.tooltips.sun();" onmouseout="hideTooltip();"
-                 onmousedown="if (debug.locations.sun < 4) items[debug.selectedItem].location = 'sun'; else alert('The sun is somehow full'); debug.selectedItem = -1;">
+                 onmousedown="if (debug.locations.sun < 4) items[debug.selectedItem].location = 'sun'; else alert('The sun is somehow full'); debug.selectedItem = -1; sendUpdate();">
             <img id="freezer" alt="Freezer" src="img/freezer.png" style="right: 128px;" class="station"
                  onmousemove="debug.tooltips.freezer();" onmouseout="hideTooltip();"
-                 onmousedown="if (debug.locations.freezer < 4) items[debug.selectedItem].location = 'freezer'; else alert('Your freezer is full!'); debug.selectedItem = -1;">
+                 onmousedown="if (debug.locations.freezer < 4) items[debug.selectedItem].location = 'freezer'; else alert('Your freezer is full!'); debug.selectedItem = -1; sendUpdate();">
             <img id="accelerator" alt="Accelerator" src="img/accelerator-inactive.png"
                  style="right: 256px; z-index: -1;"
                  class="station" onmousemove="debug.tooltips.accelerator();" onmouseout="hideTooltip();"
-                 onmousedown="if (debug.locations.particleAccelerator < 1) items[debug.selectedItem].location = 'particleAccelerator'; else alert('The particle accelerator can only hold one item!'); debug.selectedItem = -1;">
+                 onmousedown="if (debug.locations.particleAccelerator < 1) items[debug.selectedItem].location = 'particleAccelerator'; else alert('The particle accelerator can only hold one item!'); debug.selectedItem = -1; sendUpdate();">
             <img id="decelerator" alt="Decelerator" src="img/decelerator-inactive.png"
                  style="right: 384px; z-index: -1;"
                  class="station" onmousemove="debug.tooltips.decelerator();" onmouseout="hideTooltip();"
-                 onmousedown="if (debug.locations.particleDecelerator < 1) items[debug.selectedItem].location = 'particleDecelerator'; else alert('The particle decelerator can only hold one item!'); debug.selectedItem = -1;">
+                 onmousedown="if (debug.locations.particleDecelerator < 1) items[debug.selectedItem].location = 'particleDecelerator'; else alert('The particle decelerator can only hold one item!'); debug.selectedItem = -1; sendUpdate();">
             <img id="mortar" alt="Mortar" src="img/mortar/0.png" style="right: 512px;" class="station"
                  onmousemove="debug.tooltips.mortar();" onmouseout="hideTooltip();"
-                 onmousedown="items[debug.selectedItem].grind();">
+                 onmousedown="items[debug.selectedItem].grind(); sendUpdate();">
             <img id="autoCutter" alt="Automatic Cutter" src="img/autoCutter/0.png" style="left: 128px;" data-size="25"
                  class="station" onmousemove="debug.tooltips.autoCutter();" onmouseout="hideTooltip();"
-                 onmousedown="items[debug.selectedItem].cut(document.getElementById('autoCutter').getAttribute('data-size'));">
+                 onmousedown="items[debug.selectedItem].cut(document.getElementById('autoCutter').getAttribute('data-size')); sendUpdate();">
             <p id="autoCutterSize"
                style="z-index: 1; position: absolute; left: 160px; bottom: 0; pointer-events: none;">25 g</p>
         </div>
@@ -69,7 +75,7 @@
     </div>
     <div id="serve" style="display: none;">
         <img alt="Plate" src="img/plate.png" id="plate" onmousemove="debug.tooltips.plate();"
-             onmousedown="items[debug.selectedItem].location = 'recipeMaker'; debug.selectedItem = -1;"
+             onmousedown="items[debug.selectedItem].location = 'recipeMaker'; debug.selectedItem = -1; sendUpdate();"
              oncontextmenu="makeRecipe(debug.ingredients);">
         <img alt="Trash Can" src="img/trash.png" id="trash" onmousemove="debug.tooltips.trash();"
              onmousedown="items[debug.selectedItem].gone = true; debug.selectedItem = -1;" class="station"
@@ -96,7 +102,8 @@
             <p>Total Earnings: $100.00</p>
         </div>
     </div>
-    <div id="upgrades" style="display: none; overflow-y: auto; height: 98vh;"><h1 onmousemove="debug.tooltips.modifiers();">Upgrades</h1></div>
+    <div id="upgrades" style="display: none; overflow-y: auto; height: 98vh;"><h1
+            onmousemove="debug.tooltips.modifiers();">Upgrades</h1></div>
     <div id="config" style="display: none;">
         <label for="settings" style="font-size: 32px;">Settings</label>
         <textarea id="settings" style="display: none;" spellcheck="false"
@@ -110,15 +117,6 @@
         <label for="textColor">Text Color:</label>
         <input type="text" name="textColor" id="textColor">
         <br>
-        <label for="paychecksEnabled">Paychecks Enabled?</label>
-        <input type="checkbox" name="paychecksEnabled" id="paychecksEnabled">
-        <br>
-        <label for="maxPaycheckValue">Max Paycheck Value:</label>
-        <input type="number" name="maxPaycheckValue" id="maxPaycheckValue">
-        <br>
-        <label for="paycheckTime">Paycheck Interval:</label>
-        <input type="number" name="paycheckTime" id="paycheckTime">
-        <br>
         <label for="units">Units:</label>
         <select name="units" id="units">
             <option value="imperial">Imperial</option>
@@ -128,34 +126,51 @@
         <label for="tooltipsEnabled">Tooltips Enabled?</label>
         <input type="checkbox" name="tooltipsEnabled" id="tooltipsEnabled">
         <br>
-        <label for="canMakeRecipes">Can Make Recipes?</label>
-        <input type="checkbox" name="canMakeRecipes" id="canMakeRecipes">
+        <label for="sandboxMode">Sandbox Mode?</label>
+        <input type="checkbox" name="sandboxMode" id="sandboxMode">
         <br>
-        <label for="foodRottingSpeed">Food Aging Speed:</label>
-        <input type="number" name="foodRottingSpeed" id="foodRottingSpeed">
-        <br>
-        <label for="cookSpeed">Food Cooking Speed:</label>
-        <input type="number" name="cookSpeed" id="cookSpeed">
-        <br>
-        <label for="minCookingTemperature">Food Cook Temperature (F):</label>
-        <input type="number" name="minCookingTemperature" id="minCookingTemperature">
-        <br>
-        <label for="roomTemp">Room Temperature (F):</label>
-        <input type="number" name="roomTemp" id="roomTemp">
-        <br>
-        <label for="priceMultiplier">Customer Payment Multiplier:</label>
-        <input type="number" name="priceMultiplier" id="priceMultiplier">
+        <div id="sandboxSettings" style="display: none;">
+            <label for="paychecksEnabled">Paychecks Enabled?</label>
+            <input type="checkbox" name="paychecksEnabled" id="paychecksEnabled">
+            <br>
+            <label for="maxPaycheckValue">Max Paycheck Value:</label>
+            <input type="number" name="maxPaycheckValue" id="maxPaycheckValue">
+            <br>
+            <label for="paycheckTime">Paycheck Interval:</label>
+            <input type="number" name="paycheckTime" id="paycheckTime">
+            <br>
+            <label for="canMakeRecipes">Can Make Recipes?</label>
+            <input type="checkbox" name="canMakeRecipes" id="canMakeRecipes">
+            <br>
+            <label for="foodRottingSpeed">Food Aging Speed:</label>
+            <input type="number" name="foodRottingSpeed" id="foodRottingSpeed">
+            <br>
+            <label for="cookSpeed">Food Cooking Speed:</label>
+            <input type="number" name="cookSpeed" id="cookSpeed">
+            <br>
+            <label for="minCookingTemperature">Food Cook Temperature (F):</label>
+            <input type="number" name="minCookingTemperature" id="minCookingTemperature">
+            <br>
+            <label for="roomTemp">Room Temperature (F):</label>
+            <input type="number" name="roomTemp" id="roomTemp">
+            <br>
+            <label for="priceMultiplier">Customer Payment Multiplier:</label>
+            <input type="number" name="priceMultiplier" id="priceMultiplier">
+        </div>
     </div>
     <div id="orders" style="display: none; overflow-y: auto; height: 100vh;"><h1 style="font-size: 200%;">Orders</h1>
     </div>
     <div id="items"></div>
-    <div id="alert" style="opacity: 0;">
+    <div id="alert" style="opacity: 0; display: none;">
         <span style="display: table-cell; vertical-align: middle;">New Order!</span>
     </div>
 </div>
 <script src="js/toNumberName.js"></script>
 <script src="js/foods.js"></script>
 <script src="js/recipes.js"></script>
+<script src="js/orders.js"></script>
+<script src="js/upgrades.js"></script>
+<script src="js/serverSide.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>

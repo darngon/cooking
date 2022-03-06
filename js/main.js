@@ -1,142 +1,44 @@
-let items = [];
-let player = {
-    money: 100,
-    recentTransactions: [],
-    popularity: 1,
-    skill: 1,
-    totalEarnings: 100
-};
-let debug = {
-    isInKitchen: true,
-    location: "kitchen",
-    groups: {
-        Money: undefined
-    },
-    tooltips: {
-        counter() {
-            showTooltip("Table", "This can be used to store food without modifying it.");
-        },
-        oven() {
-            showTooltip("Oven", "This device can be used to slowly heat up foods.");
-        },
-        fridge() {
-            showTooltip("Fridge", "This device can be used to slowly cool down foods.");
-        },
-        sun() {
-            showTooltip("Sun", "This can be used to quickly heat food up.");
-        },
-        freezer() {
-            showTooltip("Freezer", "This glass of liquid nitrogen can be used to quickly cool food down.");
-        },
-        accelerator() {
-            showTooltip("Particle Accelerator", "This device can be used to heat up food extremely quickly.");
-        },
-        decelerator() {
-            showTooltip("Particle Decelerator", "This device can be used to cool down food extremely quickly.");
-        },
-        mortar() {
-            showTooltip("Mortar", "This device can be used to grind up some substances.");
-        },
-        foodList() {
-            showTooltip("Magic Tablet", "You can use this to buy basic ingredients and liquids.");
-        },
-        autoCutter() {
-            showTooltip("Automatic Cutter", "This is used to cut foods into smaller pieces. You can scroll up or down to change the size of the cutter.");
-        },
-        plate() {
-            showTooltip("Plate", "You can put foods on this and use it to make meals. Right click to make a meal.");
-        },
-        trash() {
-            showTooltip("Trash", "bye bye food");
-        },
-        wallet() {
-            showTooltip("Wallet", "Used to store money outside of the bank");
-        },
-        modifiers() {
-            let output = `Upgrade Level: ${toNumberName(modifiers.upgradeLevel, true)}<br>`;
-            if (modifiers.upgradeSpeed !== 1)
-                output += `New Upgrade Time: ÷${toNumberName(modifiers.upgradeSpeed, true)}<br>`;
-            if (modifiers.customerPayment !== 1)
-                output += `Customer Payment: +${toNumberName((modifiers.customerPayment - 1) * 100, true)}%<br>`;
-            if (modifiers.foodPrice !== 1)
-                output += `Food Price: ÷${toNumberName(1 / modifiers.foodPrice, true)}<br>`;
-            if (modifiers.foodAgingSpeed !== 1)
-                output += `Food Aging Speed: ÷${toNumberName(1 / modifiers.foodAgingSpeed, true)}<br>`;
-            if (modifiers.serveTime !== 1)
-                output += `Serve Time: +${toNumberName((modifiers.serveTime - 1) * 100, true)}%<br>`;
-            showTooltip("Modifiers", output);
-        }
-    },
-    selectedItem: -1,
-    animations: {
-        mortar() {
-            let interval = 50;
-            let i = 0;
+if (localStorage.getItem("savedItems") !== null)
+    document.getElementById("loadGameBtn").style.display = "";
 
-            function f() {
-                setTimeout(() => {
-                    i++;
-                    if (i > 3) i = 0;
-                    interval *= 1.23;
-                    document.getElementById("mortar").src = `img/mortar/${i}.png`;
-                    if (interval < 500) f();
-                }, interval);
-            }
-
-            f();
-        }
-    },
-    otherFoodTextures: [
-        "custom",
-        "empty",
-        "transparent",
-        "unknown",
-        "unknownPowder"
-    ],
-    orderId: 0
-};
-let settings = {
-    background: "#203",
-    canMakeRecipes: true,
-    maxPaycheckValue: 150,
-    paychecksEnabled: false,
-    paycheckTime: 600,
-    textColor: "#fff",
-    tooltipsEnabled: true,
-    units: "metric",
-    foodRottingSpeed: 1,
-    cookSpeed: 1,
-    minCookingTemperature: 120,
-    roomTemp: 72,
-    priceMultiplier: 1
-};
-let orders = [];
-let upgrades = [];
-let modifiers = {
-    upgradeLevel: 1,
-    customerPayment: 1,
-    foodPrice: 1,
-    foodAgingSpeed: 1,
-    serveTime: 1,
-    upgradeSpeed: 1
-};
-
-if (localStorage.getItem("savedItems") !== null) document.getElementById("loadGameBtn").style.display = "";
 (() => {
     const a = randomFood();
     document.getElementById("icon").href = `img/food/${a}.png`;
 })();
 
-function start(loadSave) {
+function start(loadSave, isMultiplayer) {
     if (loadSave) load();
+    if (isMultiplayer) {
+        if (debug.websocketFailed) {
+            alert("Server connection failed. Check your connection.");
+            return;
+        }
+        SERVER_ID = prompt("Multiplayer Server ID?");
+        username = prompt("Username?");
+        document.getElementById("chat").style.display = "";
+        ws.send(JSON.stringify({type: "newUser", id: SERVER_ID}));
+    }
     document.getElementById("startScreen").style.display = "none";
     document.getElementById("game").style.display = "";
     reload();
-    setTimeout(newUpgrade, Math.random() * 600000 / modifiers.upgradeSpeed);
+    debug.newUpgradeTimeout = setTimeout(newUpgrade, Math.random() * 600000 / modifiers.upgradeSpeed);
+    setTimeout(getOrder, 5000);
     setInterval(save, 5000);
 }
 
-// settings.foods = foods;
+function hostServer() {
+    if (debug.websocketFailed) {
+        alert("Websocket server connection failed. Check your connection.");
+        return;
+    }
+    let serverId = (~~(Math.random() * 60466176)).toString(36);
+    SERVER_ID = serverId;
+    console.log(serverId);
+    start(false);
+    ws.send(JSON.stringify({type: "newServer", id: serverId}));
+    alert(`Server ID: ${serverId}`);
+    username = prompt("Username?");
+}
 
 for (const s in settings) {
     document.getElementById(s).setAttribute("onchange", `settings['${s}'] = this.type === "checkbox" ? this.checked : this.value; if ("${document.getElementById(s).type}" === "number") settings['${s}'] = Number(settings['${s}']); reload(true);`);
@@ -164,6 +66,7 @@ function updateSettings(clear) {
     document.body.style.background = settings.background;
     document.body.style.color = settings.textColor;
     if (clear) pay();
+    document.getElementById("sandboxSettings").style.display = settings.sandboxMode ? "" : "none";
 }
 
 function randomFood(includeLiquids) {
@@ -172,98 +75,6 @@ function randomFood(includeLiquids) {
     while (debug.otherFoodTextures.includes(a) || foods[a].group === "Money" || !includeLiquids && foods[a].volume !== undefined)
         a = Object.keys(foods)[~~(Math.random() * Object.keys(foods).length)];
     return a;
-}
-
-function getOrder() {
-    showAlert(`New Order! (#${debug.orderId + 1})`);
-    let ingredients = [];
-    for (let i = 0; i < Math.random() * player.skill; i++) {
-        const a = randomFood(false);
-        ingredients.push({
-            id: a,
-            mass: foods[a].mass !== undefined ? ~~(Math.random() * 9 + 1) * foods[a].mass : undefined,
-            cooked: Math.random() * 200
-        });
-    }
-    ingredients.sort((a, b) => {
-        let a1 = a.id.toUpperCase();
-        let b2 = b.id.toUpperCase();
-        return a1 < b2 ? -1 : a1 > b2 ? 1 : 0;
-    });
-    debug.orderId++;
-    orders.push({
-        id: debug.orderId,
-        ingredients: ingredients.filter(({id}, index) => !ingredients.map(o => o.id).includes(id, index + 1)),
-        time: (Math.random() * 600 + 600) * modifiers.serveTime,
-        customer: {
-            wealth: Math.random() < 0.9999 ? Math.random() * player.totalEarnings / 1000 + 1 : Math.random() * player.totalEarnings * 20 + 1
-        }
-    });
-    setTimeout(getOrder, Math.random() * 300000 / player.popularity);
-}
-
-function serve(foodId, orderId) {
-    let rating = 0;
-    const ingredients = items[foodId].ingredients.sort((a, b) => {
-        const a1 = a.id.toUpperCase();
-        const b1 = b.id.toUpperCase();
-        return a1 > b1 ? 1 : a1 < b1 ? -1 : 0;
-    });
-    const foodIds = ingredients.map(g => g.id);
-    const orderIds = orders[orderId].ingredients.map(g => g.id);
-    const commonIngredients = foodIds.filter(g => orderIds.includes(g));
-    rating += commonIngredients.length / orderIds.length;
-    for (let i = 0; i < ingredients.length; i++)
-        if (!commonIngredients.includes(ingredients[i].id)) {
-            ingredients.splice(i, 1);
-            i--;
-        }
-    for (let i = 0; i < orders[orderId].ingredients.length; i++)
-        if (!commonIngredients.includes(orders[orderId].ingredients[i].id)) {
-            orders[orderId].ingredients.splice(i, 1);
-            i--;
-        }
-
-    let r = 0;
-
-    for (const f in ingredients) {
-        if (ingredients[f].poisoned) items[foodId].poisoned = true;
-        ingredients[f].mass = ingredients[f].mass1;
-        const a = ingredients[f].cooked1 / ingredients[f].count1;
-        let {ingredients: ingredients2} = orders[orderId];
-        console.log(ingredients[f].mass);
-        console.log(ingredients2[f].mass);
-        ingredients[f].rating = 5 * ingredients[f].mass > ingredients2[f].mass ? 2 ** -Math.abs(ingredients[f].mass / ingredients2[f].mass - 1) : ingredients[f].mass < ingredients2[f].mass ? 2 ** -Math.abs(ingredients2[f].mass / ingredients[f].mass - 1) : 1;
-        ingredients[f].rating += 5 * a > ingredients2[f].cooked ? 2 ** -Math.abs(a / ingredients2[f].cooked - 1) : a < ingredients2[f].cooked ? 2 ** -Math.abs(ingredients2[f].cooked / a - 1) : 1;
-        ingredients[f].rating /= 2;
-        r += ingredients[f].rating;
-    }
-
-    rating += !isNaN(r / ingredients.length) ? r / ingredients.length : 0;
-
-    ingredients.sort((a, b) => {
-        let a1 = a.id.toUpperCase();
-        let b2 = b.id.toUpperCase();
-        return a1 < b2 ? -1 : a1 > b2 ? 1 : 0;
-    });
-    rating /= 2;
-    player.skill += rating / 20;
-    player.popularity += rating > 0.5 ? rating / 20 : -1 - rating / 20;
-    let extraMessage = "";
-    if (items[foodId].poisoned) {
-        extraMessage += "Customer was poisoned and died, which strongly damaged your reputation.";
-        player.popularity /= 2;
-    }
-    items[foodId].gone = true;
-
-    let cost = 0;
-    for (const i of ingredients)
-        cost += foods[i.id].price * i.mass / foods[i.id].mass;
-    const payment = Math.random() * cost * 3 * settings.priceMultiplier * orders[orderId].customer.wealth * modifiers.customerPayment;
-
-    showAlert(`Rating: ${(rating * 5).toFixed(1)}☆ / 5.0☆. Customer Paid ${format("money", payment)}. ${extraMessage}`);
-    addMoney(payment, "Customer Paid");
-    orders.splice(orderId, 1);
 }
 
 function makeRecipe(ingredients) {
@@ -291,7 +102,7 @@ function makeRecipe(ingredients) {
         volume += ingredients[i].volume;
         temp += ingredients[i].temp1 / ingredients[i].count1;
 
-        name += `${ingredients[i].name} `;
+        name += `${capitalize(toCount(ingredients[i].count))}${ingredients[i].name} `;
     }
 
     ingredients2.sort((a, b) => {
@@ -348,13 +159,16 @@ function makeRecipe(ingredients) {
 
     name += "Meal";
 
-    if (ingredients.length > 0 && confirm("You made a new food! Would you like to name it?"))
-        name = prompt("What do you want to name your food?");
+    if (ingredients.length > 0 && confirm("You made a new food! Would you like to name it?")) {
+        const p = prompt("What do you want to name your food?");
+        if (p !== "") name = p;
+    }
 
     console.log(ingredients);
     console.log(ingredients2);
 
     items.push(new food(ingredients.length > 0 ? "custom" : "empty", true, cookSpeed, ingredients.length > 0 ? cooked : 0, mass, undefined, ingredients.length > 0 ? temp : 72, ingredients.length > 0 ? name : "Empty Plate", undefined, ingredients));
+    sendUpdate();
 }
 
 function toggleFoodList(close) {
@@ -390,10 +204,12 @@ function toggleFoodList(close) {
 function buy(id) {
     const p = (foods[id].price !== undefined ? foods[id].price : 5) * (debug.groups.Money.map(g => g.id).includes(id) ? 1 : modifiers.foodPrice);
     if (debug.locations["counter"] < 20) {
-        if (player.money >= p) {
+        if (player.money >= p && !(foods[id].count <= 0)) {
+            if (foods[id].count !== undefined) foods[id].count--;
             debug.selectedItem = items.length;
             items.push(new food(id, false, undefined, 0, foods[id].mass, foods[id].volume));
             addMoney(-p, foods[id].name);
+            sendUpdate();
         }
     } else {
         showAlert("Your table is full!");
@@ -405,6 +221,7 @@ function reload(onlyFoodList) {
     if (onlyFoodList === undefined) onlyFoodList = false;
     updateSettings(false);
     if (!onlyFoodList) {
+        updateUpgradeDiv();
         let debugImgOutput = "";
         for (const f of debug.otherFoodTextures)
             debugImgOutput += `<img alt="${f}" src='img/food/${f}.png' onload="if (foods['${f}'] === undefined) foods.${f} = {}; foods.${f}.imgAvailable = true;">`;
@@ -444,7 +261,13 @@ function createFoodList() {
         foodList += `<div id="foodGroup_${j}"><h2 onmousedown="showGroup('none');" class="foodListItem">${j}</h2>`;
         for (let i of debug.groups[j]) {
             i = i.id;
-            foodList += `<p class="foodListItem" title="${foods[i].name}" onmousedown="buy('${i}');">${foods[i].name}${foods[i].mass !== undefined ? ` | ${format("mass", foods[i].mass)}` : ""}${foods[i].volume !== undefined ? ` | ${format("volume", foods[i].volume)}` : ""} | ${format("money", (foods[i].price !== undefined ? foods[i].price : 5) * (j !== "Money" ? modifiers.foodPrice : 1))}</p>`;
+            if (foods[i].count === 0) {
+                foods[i].unavailable = true;
+            } else if (foods[i].count > 0) {
+                foods[i].unavailable = false;
+            }
+
+            foodList += `<p class="foodListItem" title="${foods[i].name}" onmousedown="buy('${i}');">${foods[i].name}${foods[i].mass !== undefined ? ` | ${format("mass", foods[i].mass)}` : ""}${foods[i].volume !== undefined ? ` | ${format("volume", foods[i].volume)}` : ""}${foods[i].price !== 0 ? ` | ${format("money", (foods[i].price !== undefined ? foods[i].price : 5) * (j !== "Money" ? modifiers.foodPrice : 1))}` : ""}${(foods[i].count === undefined ? "" : ` | ${format("number", foods[i].count)} Remaining`)}</p>`;
         }
         foodList += `</div>`;
     }
@@ -467,6 +290,7 @@ function save() {
     localStorage.setItem("savedOrders", JSON.stringify(orders));
     localStorage.setItem("savedUpgrades", JSON.stringify(upgrades));
     localStorage.setItem("savedModifiers", JSON.stringify(modifiers));
+    localStorage.setItem("otherSaved", JSON.stringify(otherSaved));
 }
 
 function load() {
@@ -475,7 +299,11 @@ function load() {
     settings = JSON.parse(localStorage.getItem("savedSettings"));
     orders = JSON.parse(localStorage.getItem("savedOrders"));
     upgrades = JSON.parse(localStorage.getItem("savedUpgrades"));
-    modifiers = JSON.parse(localStorage.getItem("savedModifiers"));
+    const modifiers1 = JSON.parse(localStorage.getItem("savedModifiers"));
+    const otherSaved1 = JSON.parse(localStorage.getItem("otherSaved"));
+    for (const m in modifiers1) modifiers[m] = modifiers1[m];
+    for (const m in otherSaved1) otherSaved[m] = otherSaved1[m];
+    if (otherSaved.unlockedAlerts) document.getElementById("alert").style.display = "";
     updateUpgradeDiv();
     for (const g in items) {
         items[g] = new food(items[g]);
@@ -879,7 +707,7 @@ function format(type, value) {
         } else if (Math.abs(value) >= 0.5) {
             return Math.round(value).toLocaleString();
         } else if (Math.abs(value) > 0) {
-            return `1/${format("number", 1 / value)}`;
+            return (Math.round(value * 10) / 10).toLocaleString();
         } else if (!isNaN(value)) {
             return "0";
         } else {
@@ -962,6 +790,7 @@ function addMoney(amount, cause) {
     } else {
         player.money += amount;
     }
+    sendUpdate();
     reload(true);
 }
 
@@ -973,11 +802,35 @@ function deposit() {
 }
 
 function depositAll() {
-    for (const i in items) {
+    for (const i in items)
         if (foods[items[i].id].group === "Money") {
             debug.selectedItem = Number(i);
             deposit();
         }
+}
+
+function toCount(n) {
+    n = ~~n;
+    if (n <= 1) return "";
+    const arrays = [
+        ["", "hen", "do", "triskai", "tetrakai", "pentakai", "hexakai", "heptakai", "octakai", "enneakai"],
+        ["", "double", "triple", "quadruple", "quintuple", "sextuple", "septuple", "octuple", "nonuple"],
+        ["deca", "icosa", "triaconta", "tetraconta", "pentaconta", "hexaconta", "heptaconta", "octaconta", "enneaconta"],
+        ["hecta", "dihecta", "trihecta", "tetrahecta", "pentahecta", "hexahecta", "heptahecta", "octahecta", "enneahecta"],
+        ["killia", "mega", "giga", "tera", "peta", "exa", "zetta", "yotta"],
+        ["", "hena", "di", "tri", "tetra", "penta", "hexa", "hepta", "octa", "ennea"]
+    ];
+
+    if (n < 10) {
+        return `${arrays[1][n - 1]}-`;
+    } else if (n < 20) {
+        return `${arrays[0][n - 10]}${arrays[2][0]}-`;
+    } else if (n < 100) {
+        return `${arrays[2][~~(n / 10) - 1]}-${arrays[5][n % 10]}-`.replace("--", "-");
+    } else if (n < 1000) {
+        return `${arrays[3][~~(n / 100) - 1]}-${arrays[2][~~((n % 100) / 10) - 1]}-${arrays[5][n % 10]}-`.replace("---", "--").replace("--", "-");
+    } else {
+        return `${n}-`;
     }
 }
 
@@ -1093,7 +946,10 @@ setInterval(() => {
 
         if (Number(i) === debug.selectedItem) {
             visible = true;
-            items[i].location = "counter";
+            if (items[i].location !== "counter") {
+                items[i].location = "counter";
+                sendUpdate();
+            }
             selected = true;
             left = debug.mouseX / debug.zoom - width / 2;
             top = debug.mouseY / debug.zoom - height / 2;
@@ -1149,36 +1005,18 @@ setInterval(() => {
     document.getElementById("recipeMaker").innerHTML = `<legend>Plate</legend>${output2 !== "" ? `<button onmousedown="makeRecipe(debug.ingredients); for (const x in debug.ingredients) debug.ingredients[x].gone = true;">Create Food</button>` : ""}${output2}`;
 }, 50);
 
-setInterval(() => {
-    let output = '<h1 style="font-size: 200%;">Orders</h1>';
-    for (const o in orders) {
-        orders[o].time--;
-        if (orders[o].time <= 0) {
-            showAlert(`You ran out of time to serve Order #${orders[o].id}!`);
-            player.popularity -= 0.1;
-            orders.splice(Number(o), 1);
-        }
-        output += `<div class="order" onclick="serve(debug.selectedItem, ${o});"><h1>Order #${orders[o].id}</h1><p>${format("time", orders[o].time)}</p>`;
-        for (const i of orders[o].ingredients)
-            output += `<p>${foods[i.id].name} | ${format("mass", i.mass)} | ${format("number", i.cooked)}% Cooked</p>`;
-        output += `</div>`;
-    }
-    if (orders.length === 0) output += "<p>No orders yet</p>";
-    if (player.popularity < 1) player.popularity = 1;
-    if (player.money === Infinity) player.money = Number.MAX_VALUE;
-    document.getElementById("orders").innerHTML = output;
-    document.getElementById("stats").innerHTML = `<p>Total Earnings: ${format("money", player.totalEarnings)}</p><p>Popularity: ${player.popularity.toLocaleString()}</p><p>Skill: ${player.skill.toLocaleString()}</p>`;
-}, 1000);
-
 reload();
-getOrder();
+
+addEventListener("beforeunload", () => {
+    save();
+});
 
 document.onmousemove = e => {
     debug.mouseX = e.clientX;
     debug.mouseY = e.clientY;
 }
 
-document.onmousedown = e => {
+document.onmousedown = () => {
     debug.editingSettings = false;
 }
 
@@ -1232,6 +1070,10 @@ document.onkeydown = e => {
     }
 }
 
+document.onkeyup = () => {
+    debug.holdingShift = false;
+}
+
 document.getElementById("autoCutter").onwheel = e => {
     const d = Number(document.getElementById("autoCutter").getAttribute("data-size"));
     let a = 1;
@@ -1261,10 +1103,6 @@ document.getElementById("autoCutter").onwheel = e => {
     document.getElementById("autoCutterSize").innerText = format("mass", Number(document.getElementById("autoCutter").getAttribute("data-size")));
 }
 
-document.onkeyup = () => {
-    debug.holdingShift = false;
-}
-
 function randomKey(object) {
     return Object.keys(object)[~~(Math.random() * Object.keys(object).length)];
 }
@@ -1285,96 +1123,4 @@ function pay() {
     }
 }
 
-function newUpgrade() {
-    let rank;
-    let multiplier = 1;
-    let n = Math.random();
-    if (n < 1 / 6561) {
-        rank = "godTier";
-        multiplier = 256;
-    } else if (n < 1 / 2187) {
-        rank = "premium";
-        multiplier = 128;
-    } else if (n < 1 / 729) {
-        rank = "mythical";
-        multiplier = 64;
-    } else if (n < 1 / 243) {
-        rank = "elite";
-        multiplier = 32;
-    } else if (n < 1 / 81) {
-        rank = "legendary";
-        multiplier = 16;
-    } else if (n < 1 / 27) {
-        rank = "epic";
-        multiplier = 8;
-    } else if (n < 1 / 9) {
-        rank = "rare";
-        multiplier = 4;
-    } else if (n < 1 / 3) {
-        rank = "uncommon";
-        multiplier = 2;
-    } else {
-        rank = "common";
-    }
-    let upgrade = {
-        cost: Math.random() * player.totalEarnings * multiplier,
-        rank: rank,
-        type: randomKey(modifiers),
-        multiplier: multiplier
-    };
-    while (upgrade.type === "upgradeLevel") upgrade.type = randomKey(modifiers);
-    const {type} = upgrade;
-    if (type === "customerPayment" || type === "serveTime") {
-        upgrade.amount = Math.random() * 0.2 * modifiers.upgradeLevel * multiplier + 1;
-    } else if (type === "foodPrice" || type === "foodAgingSpeed" || type === "upgradeSpeed") {
-        upgrade.amount = multiplier / 20 + 1;
-    }
-    upgrades.push(upgrade);
-    showAlert(`New ${capitalize(rank.replace("godTier", "God Tier"))} Upgrade`);
-    updateUpgradeDiv();
-    setTimeout(newUpgrade, Math.random() * 600000 / modifiers.upgradeSpeed);
-}
-
-function buyUpgrade(i) {
-    const {amount, cost, type, multiplier} = upgrades[i];
-    if (player.money >= cost) {
-        addMoney(-cost, "Purchased Upgrades");
-        if (type === "upgradeSpeed") {
-            modifiers.upgradeSpeed *= amount;
-        } else if (type === "customerPayment") {
-            modifiers.customerPayment += amount - 1;
-        } else if (type === "foodPrice") {
-            modifiers.foodPrice /= amount;
-            reload(true);
-        } else if (type === "foodAgingSpeed") {
-            modifiers.foodAgingSpeed /= amount;
-        } else if (type === "serveTime") {
-            modifiers.serveTime += amount - 1;
-        }
-        modifiers.upgradeLevel *= Math.random() * multiplier / 100 + 1;
-        upgrades.splice(i, 1);
-        updateUpgradeDiv();
-    }
-}
-
-function updateUpgradeDiv() {
-    let output = "<h1 onmousemove='debug.tooltips.modifiers();'>Upgrades</h1>";
-    for (const u in upgrades) {
-        let text;
-        if (upgrades[u].type === "upgradeSpeed") {
-            text = `New Upgrade Time ÷${upgrades[u].amount.toLocaleString()}`;
-        } else if (upgrades[u].type === "customerPayment") {
-            text = `Customer Payment +${((upgrades[u].amount - 1) * 100).toLocaleString()}%`;
-        } else if (upgrades[u].type === "foodPrice") {
-            text = `Food Price ÷${upgrades[u].amount.toLocaleString()}`;
-        } else if (upgrades[u].type === "foodAgingSpeed") {
-            text = `Food Aging Speed ÷${upgrades[u].amount.toLocaleString()}`;
-        } else if (upgrades[u].type === "serveTime") {
-            text = `Serve Time +${((upgrades[u].amount - 1) * 100).toLocaleString()}%`;
-        }
-        output += `<div class='upgrade ${upgrades[u].rank}' onmousemove='showTooltip(\`${capitalize(upgrades[u].rank.replace("godTier", "God Tier"))} Upgrade\`, "Click to purchase, right click to sell for a quarter of the buying price.");' onmousedown='if (event.button === 0) buyUpgrade(${u});' oncontextmenu='addMoney(upgrades[${u}].cost / 4, "Sold Upgrade"); upgrades.splice(${u}, 1); updateUpgradeDiv();'><span style='position: absolute; left: 8px;'>${text}</span><span style='position: absolute; right: 8px;'>${format("money", upgrades[u].cost)}</span></div>`;
-    }
-    document.getElementById("upgrades").innerHTML = output;
-}
-
-// Downgrades that return money
+// Idea: Downgrades that return money

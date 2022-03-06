@@ -296,7 +296,7 @@ input[type=number] {
     width: 240px;
     min-height: 80px;
     display: table;
-    border-radius: 50vh 0 0 50vh;
+    border-radius: 40px 0 0 40px;
     pointer-events: none;
     transition: opacity 500ms;
 }
@@ -314,47 +314,100 @@ input[type=number] {
     width: 50%;
     height: 5%;
     border-radius: 50vh;
-    border-style: solid;
-    border-width: 1px;
-    border-color: #fff;
+    margin: 16px 0 16px 0;
+    transition: transform 250ms;
+}
+
+.upgrade span {
+    z-index: 2;
 }
 
 .upgrade:hover {
-    filter: brightness(125%);
+    transform: scale(1.05);
+    z-index: 1;
+}
+
+.empty {
+    background: #444;
+    color: #888;
+    text-align: center;
+}
+
+.empty:hover {
+    transform: none;
 }
 
 .common {
     background: linear-gradient(90deg, #888, #000);
+    filter: drop-shadow(0 0 8px #fff);
 }
 
 .uncommon {
     background: linear-gradient(90deg, #080, #000);
+    filter: drop-shadow(0 0 8px #0f0);
 }
 
 .rare {
     background: linear-gradient(90deg, #008, #000);
+    filter: drop-shadow(0 0 8px #00f);
 }
 
 .epic {
     background: linear-gradient(90deg, #808, #000);
+    filter: drop-shadow(0 0 8px #f0f);
 }
 
 .legendary {
     background: linear-gradient(90deg, #860, #000);
+    filter: drop-shadow(0 0 8px #fd0);
 }
 
 .elite {
     background: linear-gradient(90deg, #800, #000);
+    filter: drop-shadow(0 0 8px #f00);
 }
 
 .mythical {
     background: linear-gradient(90deg, #088, #000);
+    filter: drop-shadow(0 0 8px #0ff);
 }
 
 .premium {
     background: linear-gradient(90deg, #884, #000);
+    filter: drop-shadow(0 0 8px #ff8);
 }
 
 .godTier {
     background: linear-gradient(90deg, #f80, #000);
+    filter: drop-shadow(0 0 8px #f80);
+}
+
+.mpBtn {
+    background: #800;
+    border-color: #f00;
+}
+
+.mpBtn:hover {
+    background: #f44;
+}
+
+#chat {
+    text-align: left;
+    overflow: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 25%;
+    height: 25%;
+    background: #000;
+}
+
+#sendChatMsg {
+    background: #222;
+    color: #fff;
+    position: fixed;
+    top: 25%;
+    left: 0;
+    border-radius: 0;
+    width: 24.8%;
 }
