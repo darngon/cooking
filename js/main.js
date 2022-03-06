@@ -26,20 +26,6 @@ function start(loadSave, isMultiplayer) {
     setInterval(save, 5000);
 }
 
-function hostServer() {
-    if (debug.websocketFailed) {
-        alert("Websocket server connection failed. Check your connection.");
-        return;
-    }
-    let serverId = (~~(Math.random() * 60466176)).toString(36);
-    SERVER_ID = serverId;
-    console.log(serverId);
-    start(false);
-    ws.send(JSON.stringify({type: "newServer", id: serverId}));
-    alert(`Server ID: ${serverId}`);
-    username = prompt("Username?");
-}
-
 for (const s in settings) {
     document.getElementById(s).setAttribute("onchange", `settings['${s}'] = this.type === "checkbox" ? this.checked : this.value; if ("${document.getElementById(s).type}" === "number") settings['${s}'] = Number(settings['${s}']); reload(true);`);
 }
@@ -1017,7 +1003,15 @@ document.onmousemove = e => {
 }
 
 document.onmousedown = () => {
+    document.getElementById('controls').style.display = 'none';
     debug.editingSettings = false;
+}
+
+document.oncontextmenu = () => {
+    document.getElementById('controls').style.display = '';
+    document.getElementById('controls').style.left = `${debug.mouseX - 18}px`;
+    document.getElementById('controls').style.top = `${debug.mouseY - 18}px`;
+    return false;
 }
 
 document.onkeydown = e => {

@@ -1,6 +1,6 @@
 <!doctype html>
 <!--suppress HtmlFormInputWithoutLabel -->
-<html lang="en" oncontextmenu="return false;" onmouseout="hideTooltip();" ondragstart="return false;">
+<html lang="en" onmouseout="hideTooltip();" ondragstart="return false;">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,6 +17,7 @@
     </p>
     <b>FOR BEGINNERS: IMPORTANT THAT YOU READ TOOLTIPS!</b>
     <p>You can press arrow keys to go to different areas</p>
+    <p>If you're on mobile, you can hold down to show arrow keys</p>
     <button style="width: 20%;" class="mpBtn" onmousedown="hostServer();">Host Multiplayer Server (WIP)</button>
     <br>
     <button style="width: 20%;" class="mpBtn" onmousedown="start(false, true);">Join Multiplayer Server (WIP)</button>
@@ -26,6 +27,12 @@
     <button style="width: 20%; display: none;" onmousedown="start(true);" id="loadGameBtn">Load Singleplayer Game</button>
 </div>
 <div id="game" style="display: none;">
+    <div id="controls" style="position: absolute; top: 127px; left: 127px;">
+        <button onmousedown="document.onkeydown(new KeyboardEvent('keydown', {key: 'ArrowUp'}));" class="arrowBtn" style="top: -48px;">↑</button>
+        <button onmousedown="document.onkeydown(new KeyboardEvent('keydown', {key: 'ArrowDown'}));" class="arrowBtn" style="top: 48px;">↓</button>
+        <button onmousedown="document.onkeydown(new KeyboardEvent('keydown', {key: 'ArrowLeft'}));" class="arrowBtn" style="left: -48px;">←</button>
+        <button onmousedown="document.onkeydown(new KeyboardEvent('keydown', {key: 'ArrowRight'}));" class="arrowBtn" style="left: 48px;">→</button>
+    </div>
     <div id="tooltip"
          style="font-size: 75%; position: absolute; width: 256px; min-height: 192px; background: #80808080; display: none; border-radius: 20px; pointer-events: none; z-index: 2;"></div>
     <div id="kitchen">

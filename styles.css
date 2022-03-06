@@ -391,6 +391,12 @@ input[type=number] {
     background: #f44;
 }
 
+.arrowBtn {
+    width: 36px;
+    height: 36px;
+    position: absolute;
+}
+
 #chat {
     text-align: left;
     overflow: auto;

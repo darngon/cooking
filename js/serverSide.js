@@ -1,6 +1,6 @@
 // noinspection DuplicatedCode
 
-const ws = new WebSocket("ws://192.168.31.99:8080");
+const ws = new WebSocket("ws://localhost:8080");
 
 let SERVER_ID;
 let username;
@@ -139,6 +139,20 @@ function sendUpdate() {
 function sendChatMsg() {
     ws.send(JSON.stringify({id: SERVER_ID, type: "chat", message: `${username}: ${document.getElementById("sendChatMsg").value}`}));
     document.getElementById("sendChatMsg").value = "";
+}
+
+function hostServer() {
+    if (debug.websocketFailed) {
+        alert("Websocket server connection failed. Check your connection.");
+        return;
+    }
+    let serverId = (~~(Math.random() * 60466176)).toString(36);
+    SERVER_ID = serverId;
+    console.log(serverId);
+    start(false);
+    ws.send(JSON.stringify({type: "newServer", id: serverId}));
+    alert(`Server ID: ${serverId}`);
+    username = prompt("Username?");
 }
 
 ws.onopen = () => {
