@@ -1,30 +1,32 @@
 let orders = [];
 
 function getOrder() {
-    showAlert(`New Order! (#${debug.orderId + 1})`);
-    let ingredients = [];
-    for (let i = 0; i < Math.random() * player.skill; i++) {
-        const a = randomFood(false);
-        ingredients.push({
-            id: a,
-            mass: foods[a].mass !== undefined ? ~~(Math.random() * 9 + 1) * foods[a].mass : undefined,
-            cooked: Math.random() * 200
+    if (game.open) {
+        showAlert(`New Order! (#${debug.orderId + 1})`);
+        let ingredients = [];
+        for (let i = 0; i < Math.random() * player.skill; i++) {
+            const a = randomFood(false);
+            ingredients.push({
+                id: a,
+                mass: foods[a].mass !== undefined ? ~~(Math.random() * 9 + 1) * foods[a].mass : undefined,
+                cooked: Math.random() * 200
+            });
+        }
+        ingredients.sort((a, b) => {
+            let a1 = a.id.toUpperCase();
+            let b2 = b.id.toUpperCase();
+            return a1 < b2 ? -1 : a1 > b2 ? 1 : 0;
+        });
+        debug.orderId++;
+        orders.push({
+            id: debug.orderId,
+            ingredients: ingredients.filter(({id}, index) => !ingredients.map(o => o.id).includes(id, index + 1)),
+            time: (Math.random() * 600 + 600) * modifiers.serveTime,
+            customer: {
+                wealth: Math.random() < 0.9999 ? Math.random() * player.totalEarnings / 1000 + 1 : Math.random() * player.totalEarnings * 20 + 1
+            }
         });
     }
-    ingredients.sort((a, b) => {
-        let a1 = a.id.toUpperCase();
-        let b2 = b.id.toUpperCase();
-        return a1 < b2 ? -1 : a1 > b2 ? 1 : 0;
-    });
-    debug.orderId++;
-    orders.push({
-        id: debug.orderId,
-        ingredients: ingredients.filter(({id}, index) => !ingredients.map(o => o.id).includes(id, index + 1)),
-        time: (Math.random() * 600 + 600) * modifiers.serveTime,
-        customer: {
-            wealth: Math.random() < 0.9999 ? Math.random() * player.totalEarnings / 1000 + 1 : Math.random() * player.totalEarnings * 20 + 1
-        }
-    });
     sendUpdate();
     setTimeout(getOrder, Math.random() * 300000 / player.popularity);
 }
@@ -90,7 +92,7 @@ function serve(foodId, orderId) {
     const payment = Math.random() * cost * 3 * settings.priceMultiplier * orders[orderId].customer.wealth * modifiers.customerPayment;
 
     showAlert(`Rating: ${(rating * 5).toFixed(1)}☆ / 5.0☆. Customer Paid ${format("money", payment)}. ${extraMessage}`);
-    addMoney(payment, "Customer Paid");
+    addMoney(payment, "Customer Paid", Math.random() > 0.5);
     orders.splice(orderId, 1);
     sendUpdate();
 }
@@ -104,7 +106,29 @@ setInterval(() => {
             if (otherSaved.timeUpPopDec) player.popularity -= 0.1;
             orders.splice(Number(o), 1);
         }
-        output += `<div class="order" onclick="serve(debug.selectedItem, ${o});"><h1>Order #${orders[o].id}</h1><p>${format("time", orders[o].time)}</p>`;
+        let color;
+        if (orders[o].time <= 2) {
+            color = "#900";
+        } else if (orders[o].time <= 5) {
+            color = "#600";
+        } else if (orders[o].time <= 10) {
+            color = "#300";
+        } else if (orders[o].time <= 20) {
+            color = "#310";
+        } else if (orders[o].time <= 30) {
+            color = "#320";
+        } else if (orders[o].time <= 60) {
+            color = "#330";
+        } else if (orders[o].time <= 120) {
+            color = "#230";
+        } else if (orders[o].time <= 300) {
+            color = "#130";
+        } else if (orders[o].time <= 600) {
+            color = "#030";
+        } else {
+            color = "#ffffff10";
+        }
+        output += `<div class="order" style="background-color: ${color};" onclick="serve(debug.selectedItem, ${o});"><h1>Order #${orders[o].id}</h1><p>${format("time", orders[o].time)}</p>`;
         for (const i of orders[o].ingredients)
             output += `<p>${foods[i.id].name} | ${format("mass", i.mass)} | ${format("number", i.cooked)}% Cooked</p>`;
         output += `</div>`;

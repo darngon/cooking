@@ -6,26 +6,6 @@ if (localStorage.getItem("savedItems") !== null)
     document.getElementById("icon").href = `img/food/${a}.png`;
 })();
 
-function start(loadSave, isMultiplayer) {
-    if (loadSave) load();
-    if (isMultiplayer) {
-        if (debug.websocketFailed) {
-            alert("Server connection failed. Check your connection.");
-            return;
-        }
-        SERVER_ID = prompt("Multiplayer Server ID?");
-        username = prompt("Username?");
-        document.getElementById("chat").style.display = "";
-        ws.send(JSON.stringify({type: "newUser", id: SERVER_ID}));
-    }
-    document.getElementById("startScreen").style.display = "none";
-    document.getElementById("game").style.display = "";
-    reload();
-    debug.newUpgradeTimeout = setTimeout(newUpgrade, Math.random() * 600000 / modifiers.upgradeSpeed);
-    setTimeout(getOrder, 5000);
-    setInterval(save, 5000);
-}
-
 for (const s in settings) {
     document.getElementById(s).setAttribute("onchange", `settings['${s}'] = this.type === "checkbox" ? this.checked : this.value; if ("${document.getElementById(s).type}" === "number") settings['${s}'] = Number(settings['${s}']); reload(true);`);
 }
@@ -58,7 +38,7 @@ function updateSettings(clear) {
 function randomFood(includeLiquids) {
     if (includeLiquids === undefined) includeLiquids = true;
     let a = Object.keys(foods)[~~(Math.random() * Object.keys(foods).length)];
-    while (debug.otherFoodTextures.includes(a) || foods[a].group === "Money" || !includeLiquids && foods[a].volume !== undefined)
+    while (debug.otherFoodTextures.includes(a) || /Money|Cleaning/.test(foods[a].group) || !includeLiquids && foods[a].volume !== undefined && !/humanMeat|gusAshes/.test(a))
         a = Object.keys(foods)[~~(Math.random() * Object.keys(foods).length)];
     return a;
 }
@@ -75,7 +55,9 @@ function makeRecipe(ingredients) {
     let mass = 0;
     let volume = 0;
     let temp = 0;
+    let poisoned = false;
     for (const i in ingredients) {
+        if (ingredients[i].poisoned) poisoned = true;
         ingredients2[i] = {};
         ingredients2[i].id = ingredients[i].id;
         ingredients2[i].mass = ingredients[i].mass1;
@@ -152,8 +134,17 @@ function makeRecipe(ingredients) {
 
     console.log(ingredients);
     console.log(ingredients2);
-
-    items.push(new food(ingredients.length > 0 ? "custom" : "empty", true, cookSpeed, ingredients.length > 0 ? cooked : 0, mass, undefined, ingredients.length > 0 ? temp : 72, ingredients.length > 0 ? name : "Empty Plate", undefined, ingredients));
+    items.push(new food({
+        id: ingredients.length > 0 ? "custom" : "empty",
+        custom: true,
+        cookSpeed: cookSpeed,
+        cooked: ingredients.length > 0 ? cooked : 0,
+        mass: mass,
+        temp: ingredients.length > 0 ? temp : 72,
+        name: ingredients.length > 0 ? name : "Empty Plate",
+        ingredients: ingredients,
+        poisoned: poisoned
+    }, true));
     sendUpdate();
 }
 
@@ -191,6 +182,7 @@ function buy(id) {
     const p = (foods[id].price !== undefined ? foods[id].price : 5) * (debug.groups.Money.map(g => g.id).includes(id) ? 1 : modifiers.foodPrice);
     if (debug.locations["counter"] < 20) {
         if (player.money >= p && !(foods[id].count <= 0)) {
+            foods[id].bought++;
             if (foods[id].count !== undefined) foods[id].count--;
             debug.selectedItem = items.length;
             items.push(new food(id, false, undefined, 0, foods[id].mass, foods[id].volume));
@@ -223,6 +215,7 @@ function createFoodList() {
     let foodList = `<img alt='Back' class='backBtn' onmousedown='if (debug.foodListLocation !== "none") showGroup("none"); else toggleFoodList();' src='img/back.png'><div id='foodGroupList'>`;
     debug.groups = {};
     for (const i in foods) {
+        if (foods[i].bought === undefined) foods[i].bought = 0;
         if (foods[i].condition === undefined) foods[i].condition = `player.money >= foods["${i}"].price`;
         if (foods[i].condition !== undefined) foods[i].unavailable = !eval(foods[i].condition);
         if (debug.groups[foods[i].group] === undefined && !foods[i].unavailable) debug.groups[foods[i].group] = [];
@@ -272,27 +265,33 @@ function showGroup(g) {
 function save() {
     localStorage.setItem("savedItems", JSON.stringify(items));
     localStorage.setItem("savedPlayer", JSON.stringify(player));
+    localStorage.setItem("savedGame", JSON.stringify(game));
     localStorage.setItem("savedSettings", JSON.stringify(settings));
     localStorage.setItem("savedOrders", JSON.stringify(orders));
     localStorage.setItem("savedUpgrades", JSON.stringify(upgrades));
     localStorage.setItem("savedModifiers", JSON.stringify(modifiers));
     localStorage.setItem("otherSaved", JSON.stringify(otherSaved));
+    localStorage.setItem("foods", JSON.stringify(foods));
 }
 
 function load() {
     items = JSON.parse(localStorage.getItem("savedItems"));
     player = JSON.parse(localStorage.getItem("savedPlayer"));
+    game = JSON.parse(localStorage.getItem("savedGame"));
     settings = JSON.parse(localStorage.getItem("savedSettings"));
     orders = JSON.parse(localStorage.getItem("savedOrders"));
     upgrades = JSON.parse(localStorage.getItem("savedUpgrades"));
+    let foods1 = JSON.parse(localStorage.getItem("foods"));
     const modifiers1 = JSON.parse(localStorage.getItem("savedModifiers"));
     const otherSaved1 = JSON.parse(localStorage.getItem("otherSaved"));
     for (const m in modifiers1) modifiers[m] = modifiers1[m];
     for (const m in otherSaved1) otherSaved[m] = otherSaved1[m];
     if (otherSaved.unlockedAlerts) document.getElementById("alert").style.display = "";
     updateUpgradeDiv();
-    for (const g in items) {
-        items[g] = new food(items[g]);
+    for (const g in items) items[g] = new food(items[g], true);
+    for (const g in foods1) {
+        foods[g].count = foods1[g].count;
+        foods[g].bought = foods1[g].bought;
     }
     document.getElementById("recentTransactions").innerHTML = player.recentTransactions.join("");
 }
@@ -489,158 +488,6 @@ function toBills(n) {
     return output;
 }
 
-class food {
-    constructor(id, isCustom, cookSpeed, cooked, mass, volume, temp, name, liquids, ingredients) {
-        if (typeof id !== "object") {
-            this.id = id;
-            this.custom = isCustom !== undefined ? isCustom : false;
-            this.name = this.custom ? name : foods[this.id].name;
-            this.location = "counter";
-            this.temp = temp !== undefined ? temp : settings.roomTemp;
-            this.cooked = cooked !== undefined ? cooked : 0;
-            this.dateOfCreation = Date.now() / 1000;
-            this.mass = mass;
-            this.volume = volume;
-            this.cookSpeed = cookSpeed;
-            this.liquids = liquids !== undefined ? liquids : [];
-            this.ingredients = ingredients;
-            if (!this.custom) this.group = foods[id].group;
-            if (!this.custom) this.cookSpeed = foods[id].cookSpeed !== undefined ? foods[id].cookSpeed : 1;
-        } else {
-            for (const g in id.liquids) id.liquids[g] = new food(id.liquids[g]);
-            for (const g in id) this[g] = id[g];
-        }
-        setInterval(() => {
-            this.age = (Date.now() / 1000 - this.dateOfCreation) * settings.foodRottingSpeed * modifiers.foodAgingSpeed;
-            this.temp = (this.temp - settings.roomTemp) * 0.9999 + settings.roomTemp;
-            if (this.temp < -459) {
-                this.temp = -459;
-            } else if (this.temp > 212) {
-                for (const l in this.liquids) {
-                    this.liquids[l].volume /= 1 + (this.temp - 212) / 500000;
-                    if (this.liquids[l].volume < 0.001) {
-                        this.liquids.splice(Number(l), 1);
-                    }
-                }
-            }
-            this.cooked += (this.temp - settings.minCookingTemperature > 0 ? (this.temp - settings.minCookingTemperature) / (3000 / this.cookSpeed) : 0) * settings.cookSpeed;
-            if (this.mass < 0.001 && this.mass > 0) this.gone = true;
-            if (this.volume < 0.001 && this.volume > 0) this.gone = true;
-        }, 20);
-    }
-
-    format() {
-        let output = "";
-        if (this.temp < 1500) {
-            this.hue = 0;
-            this.saturation = "0%";
-            this.value = "0%";
-        }
-        if (this.temp >= 2.556e32) {
-            if (this.mass !== undefined) this.mass /= 1.1;
-            if (this.volume !== undefined) this.volume /= 1.1;
-            output += "bye bye :)";
-        } else if (this.temp >= 25000) {
-            this.hue = 210;
-            this.saturation = "50%";
-            this.value = "50%";
-            output += "Glowing Blue" + "+".repeat(Math.log10(this.temp) / 5.6 - 0.785);
-        } else if (this.temp >= 10000) {
-            this.hue = 210;
-            this.saturation = `${this.temp / 300 - 10000 / 300}%`;
-            this.value = "50%";
-            output += "Glowing White" + "+".repeat(this.temp / 3000 - 10 / 3);
-        } else if (this.temp >= 7500) {
-            this.hue = 60;
-            this.saturation = `100%`;
-            this.value = `${100 - (400 - this.temp / 25) / 2}%`;
-            output += "Glowing Yellow" + "+".repeat(this.temp / 500 - 15);
-        } else if (this.temp >= 5000) {
-            this.hue = this.temp / (2500 / 30) - 30;
-            this.saturation = "100%";
-            this.value = "50%";
-            output += "Glowing Orange" + "+".repeat(this.temp / 500 - 10);
-        } else if (this.temp >= 2000) {
-            this.hue = this.temp / 100 - 20;
-            this.saturation = "100%";
-            this.value = "50%";
-            output += "Glowing Red" + "+".repeat(this.temp / 600 - 20 / 6);
-        } else if (this.temp >= 1500) {
-            this.hue = 0;
-            this.saturation = "100%";
-            this.value = `${(this.temp / 5 - 300) / 2}%`;
-            output += "Faint Red" + "+".repeat(this.temp / 100 - 15);
-        } else if (this.cooked >= 500) {
-            output += "Charcoal";
-        } else if (this.cooked >= 200) {
-            output += "Burnt" + "+".repeat(this.cooked / 60 - 20 / 6);
-        } else if (this.cooked >= 150) {
-            output += "Overcooked" + "+".repeat(this.cooked / 10 - 15);
-        } else if (this.cooked >= 110) {
-            output += "Slightly Overcooked" + "+".repeat(this.cooked / 8 - 13.75);
-        } else if (this.cooked >= 90) {
-            output += "Perfectly Cooked" + "+".repeat(this.cooked / 4 - 22.5);
-        } else if (this.cooked >= 80) {
-            output += "Slightly Undercooked" + "+".repeat(this.cooked / 2 - 40);
-        } else if (this.cooked >= 30) {
-            output += "Undercooked" + "+".repeat(this.cooked / 10 - 3);
-        } else {
-            output += "Uncooked" + "+".repeat(this.cooked / 6 >= 0 ? this.cooked / 6 : 0);
-        }
-        if (this.age > 86400) {
-            let decompositionSpeed = (this.age - 7200) / 100000 + 1;
-            output += " | Decomposing";
-            if (this.mass !== undefined) this.mass /= decompositionSpeed;
-            if (this.volume !== undefined) this.volume /= decompositionSpeed;
-        } else if (this.age > 43200) {
-            output += " | Rotten";
-        } else if (this.age > 21600) {
-            output += " | Old";
-        } else if (this.age > 10800) {
-            output += " | Expired";
-        } else if (this.age > 5400) {
-            output += " | Nearly Expired";
-        } else if (this.age > 2700) {
-            output += " | Aged";
-        }
-        return output;
-    }
-
-    grind() {
-        if (foods[this.id] !== undefined && foods[this.id].grind !== undefined) {
-            this.gone = true;
-            items.push(new food(foods[this.id].grind.id, false, this.cookSpeed, this.cooked, foods[this.id].grind.mass, undefined, this.temp));
-        } else {
-            this.gone = true;
-            items.push(new food("unknownPowder", true, this.cookSpeed, this.cooked, this.mass, undefined, this.temp, `Ground ${this.name}`));
-        }
-
-        debug.animations.mortar();
-    }
-
-    cut(size) {
-        if (items[debug.selectedItem].mass > size) {
-            items[debug.selectedItem].mass -= size;
-            items.push(new food(items[debug.selectedItem].id, false, items[debug.selectedItem].cookSpeed, items[debug.selectedItem].cooked, size, undefined, items[debug.selectedItem].temp, items[debug.selectedItem].name));
-        } else if (items[debug.selectedItem].mass !== undefined) {
-            showAlert(`This is too small to cut ${format("mass", size)} off!`);
-        } else {
-            showAlert(`You can't cut a liquid!`);
-        }
-    }
-
-    addLiquid(liquid) {
-        console.log(liquid);
-        if (liquid.id === "poison") this.poisoned = true;
-        for (const l of this.liquids)
-            if (liquid.liquids.sort().join() === l.liquids.sort().join() && liquid.id === l.id) {
-                l.volume += liquid.volume;
-                return;
-            }
-        this.liquids.push(liquid);
-    }
-}
-
 function format(type, value) {
     if (type === "mass") {
         if (settings.units === "metric") {
@@ -690,10 +537,11 @@ function format(type, value) {
             return value.toLocaleString();
         } else if (Math.abs(value) >= 1e10) {
             return `${(value / 10 ** ~~Math.log10(value)).toFixed(2)} * 10<sup>${~~Math.log10(value)}</sup>`;
-        } else if (Math.abs(value) >= 0.5) {
+        } else if (Math.abs(value) >= 1) {
             return Math.round(value).toLocaleString();
         } else if (Math.abs(value) > 0) {
-            return (Math.round(value * 10) / 10).toLocaleString();
+            const a = 10 ** ~~(Math.log10(Math.abs(value)) - 1);
+            return (Math.round(value / a) * a).toLocaleString(undefined, {maximumFractionDigits: 15});
         } else if (!isNaN(value)) {
             return "0";
         } else {
@@ -718,9 +566,9 @@ function format(type, value) {
             return "";
         }
     } else if (type === "money") {
-        if (Math.abs(value) >= 1e308) {
+        if (Math.abs(value) >= Infinity) {
             // noinspection SpellCheckingInspection
-            return "1 Infinitibuck";
+            return "Infinity";
         } else if (Math.abs(value) >= 1e281) {
             return `${(value / Number(`1e${~~Math.log10(value)}`)).toFixed(2)} ${foods[`e${~~Math.log10(value)}`].name}`;
         } else if (Math.abs(value) >= 1e217) {
@@ -728,7 +576,7 @@ function format(type, value) {
         } else if (Math.abs(value) >= 1e202) {
             return `${Math.log10(value / 1e201).toFixed(2)} Gooragonbucks`;
         } else if (Math.abs(value) >= 1e172) {
-            return `${Math.log10(value / 1e173).toFixed(2)} Dragonbucks`;
+            return `${Math.log10(value / 1e171).toFixed(2)} Dragonbucks`;
         } else if (Math.abs(value) >= 1e153) {
             return `${Math.log10(value / 1e152).toFixed(2)} Goosebucks`;
         } else {
@@ -760,7 +608,7 @@ function showAlert(text) {
     debug.alertTimeout = setTimeout(() => document.getElementById("alert").style.opacity = "0", 5000);
 }
 
-function addMoney(amount, cause) {
+function addMoney(amount, cause, asCheck) {
     player.recentTransactions.unshift(`<p style="color: ${amount > 0 ? "green" : amount < 0 ? "red" : "white"};">${cause} | ${amount > 0 ? "+" : amount < 0 ? "-" : ""}${format("money", Math.abs(amount))}</p>`);
     while (player.recentTransactions.length > 10) {
         player.recentTransactions.pop();
@@ -769,8 +617,13 @@ function addMoney(amount, cause) {
     if (cause !== "Deposit" && amount >= 0) {
         if (cause !== "Withdraw" && cause !== "Sold Upgrade")
             player.totalEarnings += amount;
-        for (const b of toBills(amount)) {
-            items.push(new food(b, false, undefined, undefined, 1));
+        if (!asCheck) {
+            for (const b of toBills(amount)) {
+                items.push(new food(b, false, undefined, undefined, 1));
+                items[items.length - 1].location = "wallet";
+            }
+        } else {
+            items.push(new food("check", true, undefined, undefined, amount, undefined, undefined, `${format("money", amount)} Check`));
             items[items.length - 1].location = "wallet";
         }
     } else {
@@ -825,7 +678,10 @@ setInterval(() => {
         g.style.display = debug.holdingShift ? "" : "none";
 }, 20);
 
-setInterval(() => {
+function tick() {
+    game.time += settings.timeSpeed;
+    game.day = ~~(game.time / 50000) + 1;
+    game.year = ~~(game.day / 365) + 1;
     debug.ingredients = [];
     debug.zoom = window.innerWidth < 1 ? 1 / 2048 : window.innerWidth < 2 ? 1 / 1024 : window.innerWidth < 4 ? 1 / 512 : window.innerWidth < 7 ? 1 / 256 : window.innerWidth < 14 ? 1 / 128 : window.innerWidth < 28 ? 1 / 64 : window.innerWidth < 55 ? 1 / 32 : window.innerWidth < 110 ? 1 / 16 : window.innerWidth < 220 ? 1 / 8 : window.innerWidth < 439 ? 1 / 4 : window.innerWidth < 878 ? 1 / 2 : 1;
     let output = "";
@@ -840,6 +696,24 @@ setInterval(() => {
         particleDecelerator: 0
     };
     for (const i in items) {
+        items[i].age = (Date.now() / 1000 - items[i].dateOfCreation) * settings.foodRottingSpeed * modifiers.foodAgingSpeed;
+        items[i].temp = (items[i].temp - settings.roomTemp) * 0.9999 + settings.roomTemp;
+        if (items[i].temp < -459) {
+            items[i].temp = -459;
+        } else if (items[i].temp > 212) {
+            for (const l in items[i].liquids) {
+                items[i].liquids[l].volume /= 1 + (items[i].temp - 212) / 2e6;
+                if (items[i].liquids[l].volume < 0.001)
+                    items[i].liquids.splice(Number(l), 1);
+            }
+        }
+        let cookSpeed = 1;
+        if (!/oven|sun|particleAccelerator/.test(items[i].location)) cookSpeed = 0.1;
+        if (cookSpeed < 0) cookSpeed = 0;
+        items[i].cooked += ((items[i].temp - settings.minCookingTemperature > 0 ? (items[i].temp - settings.minCookingTemperature) / (3000 / items[i].cookSpeed) : 0) * settings.cookSpeed * cookSpeed) / (items[i].mass / 120);
+        if (items[i].mass < 0.001 && items[i].mass > 0) items[i].gone = true;
+        if (items[i].volume < 0.001 && items[i].volume > 0) items[i].gone = true;
+        if (items[i].cooked >= 500) items[i].name = "Charcoal";
         if (debug.locations[items[i].location] === undefined) debug.locations[items[i].location] = 0;
         debug.locations[items[i].location]++;
         let left = 0,
@@ -954,8 +828,9 @@ setInterval(() => {
         for (const l of items[i].liquids)
             liquids += `<p>${l.name} | ${format("volume", l.volume)}</p>`;
         if (settings.units === "metric") t = (items[i].temp - 32) / 1.8;
-        elem.setAttribute("onmousedown", `if (items[debug.selectedItem] !== undefined && items[debug.selectedItem].volume !== undefined) {items[debug.selectedItem].gone = true; items[${i}].addLiquid(items[debug.selectedItem]);} else debug.selectedItem = debug.selectedItem !== ${i} ? ${i} : -1;`);
-        elem.setAttribute("onmouseover", `showTooltip(items[${i}].name, \`<p>${format("number", t)}°${settings.units === "metric" ? "C" : settings.units === "imperial" ? "F" : ""}</p><p>${format("number", items[i].cooked)}% Cooked</p><p>${items[i].group !== "liquid" ? items[i].format() : ""}</p>${items[i].mass !== undefined && items[i].mass !== 0 ? `<p>${format("mass", items[i].mass)}</p>` : ''}${items[i].volume !== undefined && items[i].volume !== 0 ? `<p>${format("volume", items[i].volume)}</p>` : ''}<p>Age: ${format("time", items[i].age)}</p><div style="background: #00000080; width: fit-content;">${liquids}</div>\`);`);
+        //language=js
+        elem.setAttribute("onmousedown", `clickFunction(${i});`);
+        elem.setAttribute("onmouseover", `showTooltip(${items[i].amount !== 1 ? `"${items[i].amount}× " +` : ""}items[${i}].name, \`<p>${format("number", t)}°${settings.units === "metric" ? "C" : settings.units === "imperial" ? "F" : ""}</p><p>${format("number", items[i].cooked)}% Cooked</p><p>${items[i].group !== "liquid" ? items[i].format() : ""}</p>${items[i].mass !== undefined && items[i].mass !== 0 ? `<p>${format("mass", items[i].mass)}</p>` : ''}${items[i].volume !== undefined && items[i].volume !== 0 ? `<p>${format("volume", items[i].volume)}</p>` : ''}<p>Age: ${format("time", items[i].age)}</p><div style="background: #00000080; width: fit-content;">${liquids}</div>\`, event.clientX, event.clientY);`);
         elem.setAttribute("onmouseout", "hideTooltip();");
 
         elem.append(document.createElement("img"));
@@ -989,7 +864,64 @@ setInterval(() => {
     document.getElementById("items").innerHTML = `${output}`;
     document.getElementById("money").innerHTML = `Money: ${format("money", player.money)}`;
     document.getElementById("recipeMaker").innerHTML = `<legend>Plate</legend>${output2 !== "" ? `<button onmousedown="makeRecipe(debug.ingredients); for (const x in debug.ingredients) debug.ingredients[x].gone = true;">Create Food</button>` : ""}${output2}`;
-}, 50);
+
+    let timeH = ~~(game.time / (50000 / 24));
+    const hour2 = timeH % 24;
+    let timeM = ~~((game.time / (50000 / 24 / 60)) % 60);
+    let timeAMPM;
+    if (timeH < 12) {
+        timeAMPM = "AM";
+    } else {
+        timeAMPM = "PM";
+    }
+    timeH = timeH % 12;
+    if (timeH === 0) timeH = 12;
+    if (String(timeM).length === 1) timeM = `0${timeM}`;
+
+    const clockHTML = document.getElementById("clock");
+    let closed;
+    const clock = clockHTML.getContext("2d");
+    // noinspection SillyAssignmentJS
+    clockHTML.width = clockHTML.width;
+    if (hour2 >= 9 && hour2 < 17) {
+        clock.fillStyle = "#afa";
+        game.open = true;
+        closed = "Open";
+    } else {
+        clock.fillStyle = "#faa";
+        game.open = false;
+        closed = "Closed";
+    }
+    // Causes lag
+    //language=js
+    clockHTML.setAttribute("onmousemove", `showTooltip("Clock", "Year ${game.year}, Day ${game.day}<br>${timeH}:${timeM} ${timeAMPM}<br>${closed}", event.mouseX, event.mouseY);`);
+    clock.arc(48, 48, 48, 0, Math.PI * 2);
+    clock.fill();
+    clock.strokeStyle = "#888";
+    const hour = new Path2D();
+    hour.moveTo(48, 48);
+    hour.lineTo(Math.cos(game.time * Math.PI / 12500 - Math.PI / 2) * 24 + 48, Math.sin(game.time * Math.PI / 12500 - Math.PI / 2) * 24 + 48);
+    clock.stroke(hour);
+    const minute = new Path2D();
+    minute.moveTo(48, 48);
+    minute.lineTo(Math.cos(game.time * Math.PI / 12500 * 12 - Math.PI / 2) * 36 + 48, Math.sin(game.time * Math.PI / 12500 * 12 - Math.PI / 2) * 36 + 48);
+    clock.stroke(minute);
+}
+
+function clickFunction(i) {
+    if (items[debug.selectedItem] !== undefined) {
+        if (items[debug.selectedItem].volume !== undefined) {
+            items[debug.selectedItem].gone = true;
+            items[i].addLiquid(items[debug.selectedItem]);
+        } else if (items[debug.selectedItem].id === items[i].id || items[debug.selectedItem].cooked >= 500 && items[i].cooked >= 500) {
+            items[i].mass += items[debug.selectedItem].mass;
+            items[i].amount += items[debug.selectedItem].amount;
+            items[debug.selectedItem].gone = true;
+        }
+    } else {
+        debug.selectedItem = debug.selectedItem !== i ? i : -1;
+    }
+}
 
 reload();
 
@@ -1008,9 +940,11 @@ document.onmousedown = () => {
 }
 
 document.oncontextmenu = () => {
-    document.getElementById('controls').style.display = '';
-    document.getElementById('controls').style.left = `${debug.mouseX / debug.zoom - 18}px`;
-    document.getElementById('controls').style.top = `${debug.mouseY / debug.zoom - 18}px`;
+    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        document.getElementById('controls').style.display = '';
+        document.getElementById('controls').style.left = `${debug.mouseX / debug.zoom - 18}px`;
+        document.getElementById('controls').style.top = `${debug.mouseY / debug.zoom - 18}px`;
+    }
     return false;
 }
 

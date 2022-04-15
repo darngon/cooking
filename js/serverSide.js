@@ -1,6 +1,6 @@
 // noinspection DuplicatedCode
 
-const ws = new WebSocket("ws://localhost:8080");
+const ws = new WebSocket("ws://192.168.31.123:9928");
 
 let SERVER_ID;
 let username;
@@ -13,6 +13,12 @@ let player = {
     skill: 1,
     totalEarnings: 100
 };
+let game = {
+    time: 18750,
+    day: 1,
+    year: 1,
+    open: false
+};
 let debug = {
     websocketFailed: false,
     isInKitchen: true,
@@ -22,46 +28,46 @@ let debug = {
         undefined: undefined
     },
     tooltips: {
-        counter() {
-            showTooltip("Table", "This can be used to store food without modifying it.");
+        counter(e) {
+            showTooltip("Table", "This can be used to store food without modifying it.", e.clientX / debug.zoom, e.clientY / debug.zoom);
         },
-        oven() {
-            showTooltip("Oven", "This device can be used to slowly heat up foods.");
+        oven(e) {
+            showTooltip("Oven", "This device can be used to slowly heat up foods.", e.clientX / debug.zoom, e.clientY / debug.zoom);
         },
-        fridge() {
-            showTooltip("Fridge", "This device can be used to slowly cool down foods.");
+        fridge(e) {
+            showTooltip("Fridge", "This device can be used to slowly cool down foods.", e.clientX / debug.zoom, e.clientY / debug.zoom);
         },
-        sun() {
-            showTooltip("Sun", "This can be used to quickly heat food up.");
+        sun(e) {
+            showTooltip("Sun", "This can be used to quickly heat food up.", e.clientX / debug.zoom, e.clientY / debug.zoom);
         },
-        freezer() {
-            showTooltip("Freezer", "This glass of liquid nitrogen can be used to quickly cool food down.");
+        freezer(e) {
+            showTooltip("Freezer", "This glass of liquid nitrogen can be used to quickly cool food down.", e.clientX / debug.zoom, e.clientY / debug.zoom);
         },
-        accelerator() {
-            showTooltip("Particle Accelerator", "This device can be used to heat up food extremely quickly.");
+        accelerator(e) {
+            showTooltip("Particle Accelerator", "This device can be used to heat up food extremely quickly.", e.clientX / debug.zoom, e.clientY / debug.zoom);
         },
-        decelerator() {
-            showTooltip("Particle Decelerator", "This device can be used to cool down food extremely quickly.");
+        decelerator(e) {
+            showTooltip("Particle Decelerator", "This device can be used to cool down food extremely quickly.", e.clientX / debug.zoom, e.clientY / debug.zoom);
         },
-        mortar() {
-            showTooltip("Mortar", "This device can be used to grind up some substances.");
+        mortar(e) {
+            showTooltip("Mortar", "This device can be used to grind up some substances.", e.clientX / debug.zoom, e.clientY / debug.zoom);
         },
-        foodList() {
-            showTooltip("Magic Tablet", "You can use this to buy basic ingredients and liquids.");
+        foodList(e) {
+            showTooltip("Magic Tablet", "You can use this to buy basic ingredients and liquids.", e.clientX / debug.zoom, e.clientY / debug.zoom);
         },
-        autoCutter() {
-            showTooltip("Automatic Cutter", "This is used to cut foods into smaller pieces. You can scroll up or down to change the size of the cutter.");
+        autoCutter(e) {
+            showTooltip("Automatic Cutter", "This is used to cut foods into smaller pieces. You can scroll up or down to change the size of the cutter.", e.clientX / debug.zoom, e.clientY / debug.zoom);
         },
-        plate() {
-            showTooltip("Plate", "You can put foods on this and use it to make meals. Right click to make a meal.");
+        plate(e) {
+            showTooltip("Plate", "You can put foods on this and use it to make meals. Right click to make a meal.", e.clientX / debug.zoom, e.clientY / debug.zoom);
         },
-        trash() {
-            showTooltip("Trash", "bye bye food");
+        trash(e) {
+            showTooltip("Trash", "bye bye food", e.clientX / debug.zoom, e.clientY / debug.zoom);
         },
-        wallet() {
-            showTooltip("Wallet", "Used to store money outside of the bank");
+        wallet(e) {
+            showTooltip("Wallet", "Used to store money outside of the bank", e.clientX / debug.zoom, e.clientY / debug.zoom);
         },
-        modifiers() {
+        modifiers(e) {
             let output = `Upgrade Level: ${toNumberName(modifiers.upgradeLevel, true)}<br>Max Upgrades: ${Math.round(modifiers.maxUpgrades)}<br>`;
             if (modifiers.upgradeSpeed !== 1)
                 output += `New Upgrade Time: ÷${toNumberName(modifiers.upgradeSpeed, true)}<br>`;
@@ -73,7 +79,7 @@ let debug = {
                 output += `Food Aging Speed: ÷${toNumberName(1 / modifiers.foodAgingSpeed, true)}<br>`;
             if (modifiers.serveTime !== 1)
                 output += `Serve Time: +${toNumberName((modifiers.serveTime - 1) * 100, true)}%<br>`;
-            showTooltip("Modifiers", output);
+            showTooltip("Modifiers", output, e.clientX / debug.zoom, e.clientY / debug.zoom);
         }
     },
     selectedItem: -1,
@@ -120,10 +126,11 @@ let settings = {
     cookSpeed: 1,
     minCookingTemperature: 120,
     roomTemp: 72,
-    priceMultiplier: 1
+    priceMultiplier: 1,
+    timeSpeed: 1
 };
 let otherSaved = {
-    unlockedAlerts: false,
+    unlockedAlerts: true,
     // When you fail to serve an order in time, your popularity decreases
     timeUpPopDec: true
 };
@@ -137,8 +144,33 @@ function sendUpdate() {
 }
 
 function sendChatMsg() {
-    ws.send(JSON.stringify({id: SERVER_ID, type: "chat", message: `${username}: ${document.getElementById("sendChatMsg").value}`}));
+    ws.send(JSON.stringify({
+        id: SERVER_ID,
+        type: "chat",
+        message: `${username}: ${document.getElementById("sendChatMsg").value}`
+    }));
     document.getElementById("sendChatMsg").value = "";
+}
+
+function start(loadSave, isMultiplayer) {
+    if (loadSave) load();
+    if (isMultiplayer) {
+        if (debug.websocketFailed) {
+            alert("Server connection failed. Check your connection.");
+            return;
+        }
+        SERVER_ID = prompt("Multiplayer Server ID?");
+        username = prompt("Username?");
+        document.getElementById("chat").style.display = "";
+        ws.send(JSON.stringify({type: "newUser", id: SERVER_ID}));
+    }
+    document.getElementById("startScreen").style.display = "none";
+    document.getElementById("game").style.display = "";
+    reload();
+    debug.newUpgradeTimeout = setTimeout(newUpgrade, Math.random() * 600000 / modifiers.upgradeSpeed);
+    setTimeout(getOrder, 5000);
+    setInterval(save, 5000);
+    setInterval(tick, 50);
 }
 
 function hostServer() {
@@ -146,11 +178,14 @@ function hostServer() {
         alert("Websocket server connection failed. Check your connection.");
         return;
     }
-    let serverId = (~~(Math.random() * 60466176)).toString(36);
+    let serverId = "";
+    while (serverId.length < 5)
+        serverId = (~~(Math.random() * 60466176)).toString(36);
     SERVER_ID = serverId;
     console.log(serverId);
     start(false);
     ws.send(JSON.stringify({type: "newServer", id: serverId}));
+    document.getElementById("chat").style.display = "";
     alert(`Server ID: ${serverId}`);
     username = prompt("Username?");
 }
@@ -172,23 +207,24 @@ ws.onopen = () => {
                 orders = m.data;
             } else if (m.type === "chat") {
                 chat.push(m.message);
-                document.getElementById("chatMsg").innerHTML = chat.join("<br>");
+                document.getElementById("chatMsg").innerText = chat.join("\n");
+                document.getElementById("chat").scrollTop = document.getElementById("chat").scrollHeight;
             } else if (m.type === "missingServer") {
                 alert(`Failed to connect to ${SERVER_ID}. Try hosting a server instead.`);
                 location.reload();
             }
         }
     };
-    console.log("Connected");
+    console.log("%cConnected", "color: #0f0");
     ws.send(JSON.stringify({type: "log", value: "New user connected"}));
 }
 
 ws.onerror = () => {
     debug.websocketFailed = true;
-    console.log("Failed to connect to the WebSocket servers");
+    console.log("%cFailed to connect to the WebSocket servers", "color: #ff0");
 }
 
 ws.onclose = () => {
     debug.websocketFailed = true;
-    console.log("Disconnected from server");
+    console.log("%cDisconnected from server", "color: #ff0");
 }

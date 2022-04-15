@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@500&display=swap');
+@import url(https://fonts.googleapis.com/css2?family=Nunito:wght@500&display=swap);
 
 @media screen and (max-width: 878px) {
     body {
@@ -277,14 +277,9 @@ input[type=number] {
     border-color: #ffffff30;
     border-radius: 8px;
     margin: 5px 5px 5px 5px;
-    transition: background 250ms;
     width: 20%;
     height: 240px;
     overflow: auto;
-}
-
-.order:hover {
-    background: #ffffff20;
 }
 
 #alert {

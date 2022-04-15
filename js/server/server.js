@@ -2,12 +2,13 @@
 
 import {WebSocketServer} from 'ws';
 
-const wss = new WebSocketServer({port: 8080});
+const wss = new WebSocketServer({port: 9928});
 
 let servers = {};
 
 wss.on('connection', ws => {
     ws.on('message', data => {
+        if (!(data.includes("{") && data.includes("}") && data.includes('"'))) return;
         data = JSON.parse(data);
         console.log(data);
         if (data.type === "log") {
@@ -30,9 +31,8 @@ wss.on('connection', ws => {
             wss.broadcast(JSON.stringify(data));
         } else if (data.type === "newUser") {
             console.log(servers[data.id]);
-            if (servers[data.id] === undefined) {
+            if (servers[data.id] === undefined)
                 wss.broadcast(JSON.stringify({type: "missingServer", id: data.id}));
-            }
             wss.broadcast(JSON.stringify({type: "itemUpdate", id: data.id, data: servers[data.id].items}));
             wss.broadcast(JSON.stringify({type: "playerUpdate", id: data.id, data: servers[data.id].player}));
             wss.broadcast(JSON.stringify({type: "orderUpdate", id: data.id, data: servers[data.id].orders}));
@@ -45,7 +45,6 @@ wss.on('connection', ws => {
 
 wss.broadcast = msg => {
     console.log(msg);
-    wss.clients.forEach(client => {
+    for (const client of wss.clients)
         client.send(msg);
-    });
 };

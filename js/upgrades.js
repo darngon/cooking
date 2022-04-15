@@ -19,7 +19,7 @@ let otherUpgrades = {
             condition: "document.getElementById('alert').style.display === 'none' && !upgrades.map(g => g.text).includes(`'Enable Alerts (New order, new upgrade, etc)'`)",
             text: "'Enable Alerts (New order, new upgrade, etc)'",
             effect: "document.getElementById('alert').style.display = ''; otherSaved.unlockedAlerts = true; showAlert('Alerts Unlocked!');",
-            cost: 1000
+            cost: 200
         },
         {
             condition: "otherSaved.timeUpPopDec && !upgrades.map(g => g.effect).includes('otherSaved.timeUpPopDec = false')",
@@ -30,7 +30,7 @@ let otherUpgrades = {
     ],
     legendary: [
         {
-            condition: "true",
+            condition: true,
             text: "'Double Upgrade Level'",
             effect: "modifiers.upgradeLevel *= 2;",
             cost: "player.totalEarnings / 1.5"
@@ -41,12 +41,12 @@ let otherUpgrades = {
             condition: "modifiers.maxUpgrades < 25 && upgrades.map(g => g.effect).filter(g => g === 'modifiers.maxUpgrades++;').length < 25 - modifiers.maxUpgrades",
             text: "'+1 Upgrade Slot'",
             effect: "modifiers.maxUpgrades++;",
-            cost: "10 ** modifiers.maxUpgrades / Math.cbrt(8 ** modifiers.maxUpgrades)"
+            cost: "7 ** (modifiers.maxUpgrades + upgrades.map(g => g.effect).filter(g => g === 'modifiers.maxUpgrades++;').length)"
         }
     ],
     mythical: [
         {
-            condition: "true",
+            condition: true,
             text: "'Get three new legendary upgrades'",
             effect: "for (let i = 0; i < 3; i++) newUpgrade('legendary', 20, true);"
         }
@@ -60,7 +60,7 @@ let otherUpgrades = {
     ],
     godTier: [
         {
-            condition: "true",
+            condition: true,
             text: "'Every Modifier ^2'",
             effect: "for (const i in modifiers) if (typeof modifiers[i] === 'number' && i !== 'maxUpgrades') modifiers[i] **= 2;"
         }
@@ -169,7 +169,6 @@ function buyUpgrade(i) {
 }
 
 function holdToBuyUpgrade(id) {
-    clearInterval(debug.buyUpgradeInterval2);
     if (player.money >= upgrades[id].cost) debug.holdTime++;
     document.getElementById(`upgradeBG_${id}`).style.width = `${debug.holdTime / 2}%`;
     if (debug.holdTime >= 200) {
@@ -179,13 +178,10 @@ function holdToBuyUpgrade(id) {
     }
 }
 
-function stopHoldingUpgrade(id) {
-    debug.buyUpgradeInterval2 = setInterval(() => {
-        debug.holdTime /= 1.3;
-        if (debug.holdTime < 0) debug.holdTime = 0;
-        document.getElementById(`upgradeBG_${id}`).style.width = `${debug.holdTime / 2}%`;
-    }, 20);
+function stopHoldingUpgrade() {
+    debug.holdTime = 0;
     clearInterval(debug.buyUpgradeInterval);
+    for (const i in upgrades) document.getElementById(`upgradeBG_${i}`).style.width = "0";
 }
 
 function updateUpgradeDiv() {
@@ -205,7 +201,7 @@ function updateUpgradeDiv() {
         } else if (upgrades[u].type === "serveTime") {
             text = `Serve Time +${((upgrades[u].amount - 1) * 100).toLocaleString()}%`;
         }
-        output += `<div id='upgrade_${u}' class='upgrade ${upgrades[u].rank}' onmousemove='showTooltip(\`${capitalize(upgrades[u].rank.replace("godTier", "God Tier"))} Upgrade\`, "Click to purchase, right click to sell for a quarter of the buying price.");' onmousedown='if (event.button === 0) debug.buyUpgradeInterval = setInterval(() => {holdToBuyUpgrade(${u})}, 20);' onmouseup="stopHoldingUpgrade(${u});" oncontextmenu='addMoney(upgrades[${u}].cost / 4, "Sold Upgrade"); upgrades.splice(${u}, 1); updateUpgradeDiv();'><span style='position: absolute; left: 8px;'>${text}</span><span style='position: absolute; right: 8px;'>${format("money", upgrades[u].cost)}</span><div id="upgradeBG_${u}" style="width: 0; height: 100%; border-radius: 50vh; background: #fff; opacity: 0.5;"></div></div>`;
+        output += `<div id='upgrade_${u}' class='upgrade ${upgrades[u].rank}' onmousemove='showTooltip(\`${capitalize(upgrades[u].rank.replace("godTier", "God Tier"))} Upgrade\`, "Click to purchase, right click to sell for a quarter of the buying price.");' onmousedown='clearInterval(debug.buyUpgradeInterval); if (event.button === 0) debug.buyUpgradeInterval = setInterval(() => {holdToBuyUpgrade(${u})}, 20);' onmouseup="stopHoldingUpgrade(${u});" oncontextmenu='addMoney(upgrades[${u}].cost / 4, "Sold Upgrade"); upgrades.splice(${u}, 1); updateUpgradeDiv();'><span style='position: absolute; left: 8px;'>${text}</span><span style='position: absolute; right: 8px;'>${format("money", upgrades[u].cost)}</span><div id="upgradeBG_${u}" style="width: 0; height: 100%; border-radius: 50vh; background: #fff; opacity: 0.5;"></div></div>`;
     }
     for (let i = upgrades.length; i < modifiers.maxUpgrades; i++)
         output += `<div class="upgrade empty" onmousemove="showTooltip('Empty Upgrade Slot', 'Eventually a new upgrade will appear here');"><span style="width: 100%;">Empty</span></div>`
