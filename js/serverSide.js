@@ -1,6 +1,6 @@
 // noinspection DuplicatedCode
 
-const ws = new WebSocket("ws://192.168.31.123:9928");
+const ws = new WebSocket("wss://localhost:9928");
 
 let SERVER_ID;
 let username;
@@ -14,7 +14,7 @@ let player = {
     totalEarnings: 100
 };
 let game = {
-    time: 18750,
+    time: 18738,
     day: 1,
     year: 1,
     open: false
@@ -153,6 +153,7 @@ function sendChatMsg() {
 }
 
 function start(loadSave, isMultiplayer) {
+    debug.started = true;
     if (loadSave) load();
     if (isMultiplayer) {
         if (debug.websocketFailed) {

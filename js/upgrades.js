@@ -185,7 +185,7 @@ function stopHoldingUpgrade() {
 }
 
 function updateUpgradeDiv() {
-    let output = "<h1 onmousemove='debug.tooltips.modifiers();'>Upgrades</h1>";
+    let output = "<h1 onmousemove='debug.tooltips.modifiers(event);'>Upgrades</h1>";
     for (const u in upgrades) {
         let text;
         if (upgrades[u].text !== undefined) {

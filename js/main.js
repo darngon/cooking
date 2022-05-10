@@ -580,7 +580,7 @@ function format(type, value) {
         } else if (Math.abs(value) >= 1e153) {
             return `${Math.log10(value / 1e152).toFixed(2)} Goosebucks`;
         } else {
-            return `$${toNumberName(value, true, 2)}`;
+            return `$${toNumberName(value, false, 2)}`;
         }
     }
 }
@@ -710,7 +710,7 @@ function tick() {
         let cookSpeed = 1;
         if (!/oven|sun|particleAccelerator/.test(items[i].location)) cookSpeed = 0.1;
         if (cookSpeed < 0) cookSpeed = 0;
-        items[i].cooked += ((items[i].temp - settings.minCookingTemperature > 0 ? (items[i].temp - settings.minCookingTemperature) / (3000 / items[i].cookSpeed) : 0) * settings.cookSpeed * cookSpeed) / (items[i].mass / 120);
+        items[i].cooked += ((items[i].temp - settings.minCookingTemperature > 0 ? (items[i].temp - settings.minCookingTemperature) / (3000 / items[i].cookSpeed) : 0) * settings.cookSpeed * cookSpeed) / Math.cbrt(items[i].mass / 60);
         if (items[i].mass < 0.001 && items[i].mass > 0) items[i].gone = true;
         if (items[i].volume < 0.001 && items[i].volume > 0) items[i].gone = true;
         if (items[i].cooked >= 500) items[i].name = "Charcoal";
@@ -869,7 +869,7 @@ function tick() {
     const hour2 = timeH % 24;
     let timeM = ~~((game.time / (50000 / 24 / 60)) % 60);
     let timeAMPM;
-    if (timeH < 12) {
+    if (timeH % 24 < 12) {
         timeAMPM = "AM";
     } else {
         timeAMPM = "PM";
@@ -892,9 +892,8 @@ function tick() {
         game.open = false;
         closed = "Closed";
     }
-    // Causes lag
     //language=js
-    clockHTML.setAttribute("onmousemove", `showTooltip("Clock", "Year ${game.year}, Day ${game.day}<br>${timeH}:${timeM} ${timeAMPM}<br>${closed}", event.mouseX, event.mouseY);`);
+    clockHTML.setAttribute("onmousemove", `showTooltip("Clock", "Year ${game.year}, Day ${game.day}<br>${timeH}:${timeM} ${timeAMPM}<br>${closed}${!game.open ? `<br>Click to skip to tomorrow morning` : ""}", event.mouseX, event.mouseY);`);
     clock.arc(48, 48, 48, 0, Math.PI * 2);
     clock.fill();
     clock.strokeStyle = "#888";
@@ -906,6 +905,13 @@ function tick() {
     minute.moveTo(48, 48);
     minute.lineTo(Math.cos(game.time * Math.PI / 12500 * 12 - Math.PI / 2) * 36 + 48, Math.sin(game.time * Math.PI / 12500 * 12 - Math.PI / 2) * 36 + 48);
     clock.stroke(minute);
+    if (Math.round(game.time % 50000) === 18740) newDay();
+}
+
+function newDay() {
+    document.getElementById("newDayScreen").children[0].innerHTML = `Year ${(game.year).toLocaleString()}<br>Day ${Math.round((game.day - 1) % 365 + 1).toLocaleString()}`;
+    document.getElementById("newDayScreen").style.opacity = "1";
+    setTimeout(() => document.getElementById("newDayScreen").style.opacity = "0", 5000);
 }
 
 function clickFunction(i) {
@@ -926,7 +932,7 @@ function clickFunction(i) {
 reload();
 
 addEventListener("beforeunload", () => {
-    save();
+    if (debug.started) save();
 });
 
 document.onmousemove = e => {

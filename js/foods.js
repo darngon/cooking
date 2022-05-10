@@ -105,7 +105,7 @@ let foods = {
     rosemary: {name: "Rosemary", group: "Herbs / Spices", mass: 1, price: 0.1},
     sage: {name: "Sage Leaf", group: "Herbs / Spices", mass: 1, price: 0.1},
     salmon: {name: "Salmon Fillet", group: "Seafood", mass: 170, price: 5},
-    salt: {name: "Salt", group: "Herbs / Spices", mass: 500, unavailable: true},
+    salt: {name: "Salt", group: "Herbs / Spices", mass: 500, price: 5, unavailable: true},
     saltCrystal: {name: "Salt Crystal", group: "Herbs / Spices", mass: 500, price: 5, grind: {id: "salt", mass: 500}},
     sausage: {name: "Sausage", group: "Meats", mass: 100, price: 4},
     scallion: {name: "Scallion", group: "Vegetables", mass: 15, price: 1.25},

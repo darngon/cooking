@@ -412,3 +412,23 @@ input[type=number] {
     border-radius: 0;
     width: 24.8%;
 }
+
+#newDayScreen {
+    background: #000;
+    width: 100vw;
+    height: 100vh;
+    z-index: 100;
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    pointer-events: none;
+    display: table;
+    transition: opacity 1s;
+}
+
+#newDayScreen > span {
+    font-size: 10vh;
+    display: table-cell;
+    vertical-align: middle;
+}

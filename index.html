@@ -7,10 +7,12 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Cooking</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="../quest/fonts.css">
     <link rel="icon" href="img/bottle.png" id="icon">
 </head>
 <body>
+<div id="newDayScreen">
+    <span>If you see this, either there was a code error, or you just have a fast web browser</span>
+</div>
 <div id="startScreen">
     <h1>Cooking!</h1>
     <p>Inspired by Cooking Simulator</p>
@@ -46,7 +48,7 @@
     <div id="tooltip"
          style="font-size: 75%; position: absolute; width: 256px; min-height: 192px; background: #80808080; display: none; border-radius: 20px; pointer-events: none; z-index: 2;"></div>
     <div id="kitchen">
-        <canvas id="clock" width="96" height="96" style="position: absolute; right: 8px;"></canvas>
+        <canvas id="clock" width="96" height="96" style="position: absolute; right: 8px;" onmousedown="if (!game.open) {game.time = Math.ceil(game.time / 50000) * 50000 + 18738; newDay()}"></canvas>
         <div id="chat" style="display: none;">
             <div id="chatMsg"></div>
             <input type="text" id="sendChatMsg" onkeydown="if (event.key === 'Enter') sendChatMsg();"></div>
@@ -123,7 +125,7 @@
         </div>
     </div>
     <div id="upgrades" style="display: none; overflow-y: auto; height: 98vh;"><h1
-            onmousemove="debug.tooltips.modifiers();">Upgrades</h1></div>
+            onmousemove="debug.tooltips.modifiers(event);">Upgrades</h1></div>
     <div id="config" style="display: none;">
         <label for="settings" style="font-size: 32px;">Settings</label>
         <textarea id="settings" style="display: none;" spellcheck="false"
@@ -184,7 +186,7 @@
     <div id="orders" style="display: none; overflow-y: auto; height: 100vh;"><h1 style="font-size: 200%;">Orders</h1>
     </div>
     <div id="items"></div>
-    <div id="alert" style="opacity: 0; display: none;">
+    <div id="alert" style="opacity: 0;">
         <span style="display: table-cell; vertical-align: middle;">New Order!</span>
     </div>
 </div>
