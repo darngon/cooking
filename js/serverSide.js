@@ -1,6 +1,6 @@
 // noinspection DuplicatedCode
 
-const ws = new WebSocket("wss://10.214.148.236:9928");
+const ws = new WebSocket("ws://10.214.148.236:9928");
 
 let SERVER_ID;
 let username;
@@ -193,6 +193,10 @@ function hostServer() {
 
 ws.addEventListener("open", () => {
     debug.websocketFailed = false;
+	document.querySelector("#host").disabled = false;
+	document.querySelector("#join").disabled = false;
+	document.querySelector("#host").innerText = "Host Multiplayer Server";
+	document.querySelector("#join").innerText = "Join Multiplayer Server";
     ws.onmessage = m => {
         try {
 			m = JSON.parse(m.data);
@@ -229,6 +233,8 @@ ws.addEventListener("open", () => {
 ws.onerror = () => {
     debug.websocketFailed = true;
     console.log("%cFailed to connect to the WebSocket servers", "color: #ff0");
+	document.querySelector("#host").innerText = "Host Multiplayer Server (Unavailable)";
+	document.querySelector("#join").innerText = "Join Multiplayer Server (Unavailable)";
 }
 
 ws.onclose = () => {

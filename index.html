@@ -19,12 +19,13 @@
 		<p>Some ideas and textures shared both ways with <a href="https://gooseterv.github.io/cooking/"
 															style="color: red;">GooseterV</a>
 		</p>
-		<b>FOR BEGINNERS: IMPORTANT THAT YOU READ TOOLTIPS!</b>
+		<b>FOR BEGINNERS: IMPORTANT THAT YOU READ TOOLTIPS (hover over items)!</b>
 		<p>You can press arrow keys to go to different areas</p>
 		<p>If you're on mobile, you can hold down to show arrow keys</p>
-		<button style="width: 20%;" class="mpBtn" onmousedown="hostServer();">Host Multiplayer Server (WIP)</button>
+		<p>However, do note this game is not optimized or made for mobile</p>
+		<button style="width: 20%;" class="mpBtn" id="host" onmousedown="hostServer();" disabled>Host Multiplayer Server (Connecting...)</button>
 		<br>
-		<button style="width: 20%;" class="mpBtn" onmousedown="start(false, true);">Join Multiplayer Server (WIP)
+		<button style="width: 20%;" class="mpBtn" id="join" onmousedown="start(false, true);" disabled>Join Multiplayer Server (Connecting...)
 		</button>
 		<br>
 		<button style="width: 20%;" onmousedown="start(false);">New Singleplayer Game</button>

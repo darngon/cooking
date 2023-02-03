@@ -419,6 +419,13 @@ input[type=number] {
 	background: #f44;
 }
 
+.mpBtn:disabled {
+	cursor: not-allowed;
+	background: #622;
+	border-color: #b44;
+	color: #a88;
+}
+
 .arrowBtn {
 	width: 36px;
 	height: 36px;
