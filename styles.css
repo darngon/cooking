@@ -472,3 +472,10 @@ input[type=number] {
 	display: table-cell;
 	vertical-align: middle;
 }
+
+#download {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	text-align: left;
+}
