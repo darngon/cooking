@@ -1,6 +1,6 @@
 // noinspection DuplicatedCode
 
-const ws = new WebSocket("ws://10.214.148.236:9928");
+const ws = new WebSocket("wss://10.214.148.236:9928");
 
 let SERVER_ID;
 let username;
@@ -240,4 +240,8 @@ ws.onerror = () => {
 ws.onclose = () => {
     debug.websocketFailed = true;
     console.log("%cDisconnected from server", "color: #ff0");
+	if (SERVER_ID !== undefined) {
+		showAlert("You have been disconnected from the server. Press OK to reload the page.");
+		location.reload();
+	}
 }
