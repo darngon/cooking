@@ -8,8 +8,8 @@ function getOrder() {
             const a = randomFood(false);
             ingredients.push({
                 id: a,
-                mass: foods[a].mass !== undefined ? ~~(Math.random() * 9 + 1) * foods[a].mass : undefined,
-                cooked: Math.random() * 200
+                mass: foods[a].mass !== undefined ? Math.ceil(Math.tan(Math.random() * Math.PI / 2)) * foods[a].mass : undefined,
+                cooked: Math.tan(Math.random() * Math.PI / 2) ** 0.5 * 100
             });
         }
         ingredients.sort((a, b) => {
@@ -103,7 +103,7 @@ setInterval(() => {
         orders[o].time--;
         if (orders[o].time <= 0) {
             showAlert(`You ran out of time to serve Order #${orders[o].id}!`);
-            if (otherSaved.timeUpPopDec) player.popularity -= 0.1;
+            if (otherSaved.timeUpPopDec) player.popularity -= Math.random() * 0.1 + 0.05;
             orders.splice(Number(o), 1);
         }
         let color;
@@ -130,7 +130,7 @@ setInterval(() => {
         }
         output += `<div class="order" style="background-color: ${color};" onclick="serve(debug.selectedItem, ${o});"><h1>Order #${orders[o].id}</h1><p>${format("time", orders[o].time)}</p>`;
         for (const i of orders[o].ingredients)
-            output += `<p>${foods[i.id].name} | ${format("mass", i.mass)} | ${format("number", i.cooked)}% Cooked</p>`;
+            output += `<p>${format("number", i.mass / foods[i.id].mass)}x ${foods[i.id].name} | ${format("number", i.cooked)}% Cooked</p>`;
         output += `</div>`;
     }
     if (orders.length === 0) output += "<p>No orders yet</p>";

@@ -1,434 +1,467 @@
 @import url(https://fonts.googleapis.com/css2?family=Nunito:wght@500&display=swap);
 
 @media screen and (max-width: 878px) {
-    body {
-        zoom: 50%;
-    }
+	body {
+		zoom: 50%;
+	}
 }
 
 @media screen and (max-width: 439px) {
-    body {
-        zoom: 25%;
-    }
+	body {
+		zoom: 25%;
+	}
 }
 
 @media screen and (max-width: 220px) {
-    body {
-        zoom: 12.5%;
-    }
+	body {
+		zoom: 12.5%;
+	}
 }
 
 @media screen and (max-width: 110px) {
-    body {
-        zoom: 6.25%;
-    }
+	body {
+		zoom: 6.25%;
+	}
 }
 
 @media screen and (max-width: 55px) {
-    body {
-        zoom: 3.125%;
-    }
+	body {
+		zoom: 3.125%;
+	}
 }
 
 @media screen and (max-width: 28px) {
-    body {
-        zoom: 1.5625%;
-    }
+	body {
+		zoom: 1.5625%;
+	}
 }
 
 @media screen and (max-width: 14px) {
-    body {
-        zoom: 0.78125%;
-    }
+	body {
+		zoom: 0.78125%;
+	}
 }
 
 @media screen and (max-width: 7px) {
-    body {
-        zoom: calc(0.78125% / 2);
-    }
+	body {
+		zoom: calc(0.78125% / 2);
+	}
 }
 
 @media screen and (max-width: 4px) {
-    body {
-        zoom: calc(0.78125% / 4);
-    }
+	body {
+		zoom: calc(0.78125% / 4);
+	}
 }
 
 @media screen and (max-width: 2px) {
-    body {
-        zoom: calc(0.78125% / 8);
-    }
+	body {
+		zoom: calc(0.78125% / 8);
+	}
 }
 
 @media screen and (max-width: 1px) {
-    body {
-        zoom: calc(0.78125% / 16);
-    }
+	body {
+		zoom: calc(0.78125% / 16);
+	}
 }
 
 body {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-family: Nunito, sans-serif;
-    color: white;
-    background: #203;
-    text-align: center;
-    user-select: none;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	font-family: Nunito, sans-serif;
+	color: white;
+	background: #203;
+	text-align: center;
+	user-select: none;
 }
 
 button {
-    width: 100%;
-    height: 36px;
-    border-radius: 100vw;
-    color: white;
-    background: #444;
-    border-style: solid;
-    font-family: inherit;
+	width: 100%;
+	height: 36px;
+	border-radius: 100vw;
+	color: white;
+	background: #444;
+	border-style: solid;
+	font-family: inherit;
 }
 
 button:hover {
-    background: #555;
+	background: #555;
 }
 
 .food {
-    display: inline-block;
-    width: 20vw;
-    text-align: center;
+	display: inline-block;
+	width: 20vw;
+	text-align: center;
 }
 
 #foodList, .foodList {
-    border-radius: 20px;
-    position: absolute;
-    top: 24px;
-    background: #c3f;
-    color: #fff;
-    overflow-y: auto;
-    width: fit-content;
-    min-width: 240px;
-    transition: height 500ms, width 500ms, opacity 500ms, border-radius 500ms, margin-left 500ms, left 500ms, top 500ms, min-width 500ms;
-    box-shadow: 0 0 20px 5px #c3f;
+	border-radius: 20px;
+	position: absolute;
+	top: 24px;
+	background: #c3f;
+	color: #fff;
+	overflow-y: auto;
+	width: fit-content;
+	min-width: 240px;
+	transition: 500ms;
+	box-shadow: 0 0 20px 5px #c3f;
 }
 
 .foodListItem {
-    cursor: pointer;
-    transition: color 250ms;
+	cursor: pointer;
+	transition: color 250ms;
 }
 
 .foodListItem:hover {
-    color: #11d51d;
+	color: #11d51d;
+}
+
+#foodListCount > button {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+}
+
+#foodListCount > label {
+	float: left;
+	margin-left: 0.5vw;
+}
+
+#foodListCount > input {
+	margin-right: 0.5vw;
+	background: none;
+	outline: none;
+	color: #fff;
+	font: inherit;
+	text-align: right;
+	float: right;
+	user-select: text;
+	width: 8vw;
+}
+
+#purchaseBtn {
+	cursor: pointer;
+	background: #80b;
+	border: none;
+}
+
+#purchaseBtn:hover {
+	background: #90c;
 }
 
 .cantAfford {
-    color: #bbb;
-    cursor: default;
+	color: #bbb;
+	cursor: default;
 }
 
 .cantAfford:hover {
-    color: #bbb;
+	color: #bbb;
 }
 
 fieldset {
-    border-radius: 20px;
-    border-width: 3px;
-    border-style: solid;
+	border-radius: 20px;
+	border-width: 3px;
+	border-style: solid;
 }
 
 img {
-    image-rendering: pixelated;
+	image-rendering: pixelated;
 }
 
 .backBtn {
-    cursor: pointer;
-    position: fixed;
-    top: 36px;
-    left: 20px;
-    width: 28px;
-    height: 28px;
+	cursor: pointer;
+	position: fixed;
+	top: 36px;
+	left: 20px;
+	width: 28px;
+	height: 28px;
 }
 
 .station {
-    width: 128px;
-    position: absolute;
-    bottom: 0;
-    z-index: 1;
+	width: 128px;
+	position: absolute;
+	bottom: 0;
+	z-index: 1;
 }
 
 #counter {
-    top: 50%;
-    left: 50%;
-    position: absolute;
-    width: 256px;
-    height: 256px;
-    margin-left: -128px;
-    margin-top: -128px;
+	top: 50%;
+	left: 50%;
+	position: absolute;
+	width: 256px;
+	height: 256px;
+	margin-left: -128px;
+	margin-top: -128px;
 }
 
 #plate {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 256px;
-    height: 256px;
-    margin-left: -128px;
-    margin-top: -128px;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 256px;
+	height: 256px;
+	margin-left: -128px;
+	margin-top: -128px;
 }
 
 #kitchen {
-    left: 0;
-    overflow-x: hidden;
-    overflow-y: hidden;
-    transition: left 500ms, top 500ms;
+	left: 0;
+	overflow-x: hidden;
+	overflow-y: hidden;
+	transition: left 500ms, top 500ms;
 }
 
 #settings {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    margin-left: -20vw;
-    margin-top: -20vh;
-    width: 40vw;
-    height: 40vh;
-    border-radius: 12px;
-    outline: none;
-    resize: none;
-    background: black;
-    color: white;
-    white-space: nowrap;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	margin-left: -20vw;
+	margin-top: -20vh;
+	width: 40vw;
+	height: 40vh;
+	border-radius: 12px;
+	outline: none;
+	resize: none;
+	background: black;
+	color: white;
+	white-space: nowrap;
 }
 
 ::-webkit-scrollbar {
-    width: 24px;
+	width: 24px;
 }
 
 ::-webkit-scrollbar-track {
-    background: #222;
-    border-radius: 12px;
+	background: #222;
+	border-radius: 12px;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #333;
-    border-color: #222;
-    border-style: solid;
-    border-width: 6px;
-    border-radius: 12px;
+	background: #333;
+	border-color: #222;
+	border-style: solid;
+	border-width: 6px;
+	border-radius: 12px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #444;
+	background: #444;
 }
 
 #foodList::-webkit-scrollbar-track {
-    background: #80b;
+	background: #80b;
 }
 
 #foodList::-webkit-scrollbar-thumb {
-    background: #609;
-    border-color: #80b;
+	background: #609;
+	border-color: #80b;
 }
 
 input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
-    display: none;
+	display: none;
 }
 
 input, select, option {
-    font-family: inherit;
-    border-radius: 8px;
-    border-style: none;
+	font-family: inherit;
+	border-radius: 8px;
+	border-style: none;
 }
 
 input[type=number] {
-    width: 48px;
+	width: 48px;
 }
 
 #depositBtn, #depositAllBtn, #withdrawAllBtn {
-    display: table;
-    text-align: center;
-    border-radius: 50%;
-    width: 128px;
-    height: 128px;
-    position: absolute;
-    right: 8px;
+	display: table;
+	text-align: center;
+	border-radius: 50%;
+	width: 128px;
+	height: 128px;
+	position: absolute;
+	right: 8px;
 }
 
 #depositBtn {
-    background: #080;
-    top: 8px;
+	background: #080;
+	top: 8px;
 }
 
 #depositAllBtn {
-    background: #33f;
-    top: 136px;
+	background: #33f;
+	top: 136px;
 }
 
 #withdrawAllBtn {
-    background: #f33;
-    top: 264px;
+	background: #f33;
+	top: 264px;
 }
 
 #depositBtn:hover, #depositAllBtn:hover, #withdrawAllBtn:hover {
-    filter: brightness(200%);
+	filter: brightness(200%);
 }
 
 .order {
-    background: #ffffff10;
-    display: inline-block;
-    border-style: solid;
-    border-width: 5px;
-    border-color: #ffffff30;
-    border-radius: 8px;
-    margin: 5px 5px 5px 5px;
-    width: 20%;
-    height: 240px;
-    overflow: auto;
+	background: #ffffff10;
+	display: inline-block;
+	border-style: solid;
+	border-width: 5px;
+	border-color: #ffffff30;
+	border-radius: 8px;
+	margin: 5px 5px 5px 5px;
+	width: 20%;
+	height: 240px;
+	overflow: auto;
 }
 
 #alert {
-    position: absolute;
-    font-size: 20px;
-    top: 0;
-    right: 0;
-    background: #80800080;
-    width: 240px;
-    min-height: 80px;
-    display: table;
-    border-radius: 40px 0 0 40px;
-    pointer-events: none;
-    transition: opacity 500ms;
+	position: absolute;
+	font-size: 20px;
+	top: 0;
+	right: 0;
+	background: #80800080;
+	width: 240px;
+	min-height: 80px;
+	display: table;
+	border-radius: 40px 0 0 40px;
+	pointer-events: none;
+	transition: opacity 500ms;
 }
 
 #alert span {
-    display: table-cell;
-    vertical-align: middle;
+	display: table-cell;
+	vertical-align: middle;
 }
 
 .upgrade {
-    display: flex;
-    align-items: center;
-    position: relative;
-    left: 25%;
-    width: 50%;
-    height: 5%;
-    border-radius: 50vh;
-    margin: 16px 0 16px 0;
-    transition: transform 250ms;
+	display: flex;
+	align-items: center;
+	position: relative;
+	left: 25%;
+	width: 50%;
+	height: 5%;
+	border-radius: 50vh;
+	margin: 16px 0 16px 0;
+	transition: transform 250ms;
 }
 
 .upgrade span {
-    z-index: 2;
+	z-index: 2;
 }
 
 .upgrade:hover {
-    transform: scale(1.05);
-    z-index: 1;
+	transform: scale(1.05);
+	z-index: 1;
 }
 
 .empty {
-    background: #444;
-    color: #888;
-    text-align: center;
+	background: #444;
+	color: #888;
+	text-align: center;
 }
 
 .empty:hover {
-    transform: none;
+	transform: none;
 }
 
 .common {
-    background: linear-gradient(90deg, #888, #000);
-    filter: drop-shadow(0 0 8px #fff);
+	background: linear-gradient(90deg, #888, #000);
+	filter: drop-shadow(0 0 8px #fff);
 }
 
 .uncommon {
-    background: linear-gradient(90deg, #080, #000);
-    filter: drop-shadow(0 0 8px #0f0);
+	background: linear-gradient(90deg, #080, #000);
+	filter: drop-shadow(0 0 8px #0f0);
 }
 
 .rare {
-    background: linear-gradient(90deg, #008, #000);
-    filter: drop-shadow(0 0 8px #00f);
+	background: linear-gradient(90deg, #008, #000);
+	filter: drop-shadow(0 0 8px #00f);
 }
 
 .epic {
-    background: linear-gradient(90deg, #808, #000);
-    filter: drop-shadow(0 0 8px #f0f);
+	background: linear-gradient(90deg, #808, #000);
+	filter: drop-shadow(0 0 8px #f0f);
 }
 
 .legendary {
-    background: linear-gradient(90deg, #860, #000);
-    filter: drop-shadow(0 0 8px #fd0);
+	background: linear-gradient(90deg, #860, #000);
+	filter: drop-shadow(0 0 8px #fd0);
 }
 
 .elite {
-    background: linear-gradient(90deg, #800, #000);
-    filter: drop-shadow(0 0 8px #f00);
+	background: linear-gradient(90deg, #800, #000);
+	filter: drop-shadow(0 0 8px #f00);
 }
 
 .mythical {
-    background: linear-gradient(90deg, #088, #000);
-    filter: drop-shadow(0 0 8px #0ff);
+	background: linear-gradient(90deg, #088, #000);
+	filter: drop-shadow(0 0 8px #0ff);
 }
 
 .premium {
-    background: linear-gradient(90deg, #884, #000);
-    filter: drop-shadow(0 0 8px #ff8);
+	background: linear-gradient(90deg, #884, #000);
+	filter: drop-shadow(0 0 8px #ff8);
 }
 
 .godTier {
-    background: linear-gradient(90deg, #f80, #000);
-    filter: drop-shadow(0 0 8px #f80);
+	background: linear-gradient(90deg, #f80, #000);
+	filter: drop-shadow(0 0 8px #f80);
 }
 
 .mpBtn {
-    background: #800;
-    border-color: #f00;
+	background: #800;
+	border-color: #f00;
 }
 
 .mpBtn:hover {
-    background: #f44;
+	background: #f44;
 }
 
 .arrowBtn {
-    width: 36px;
-    height: 36px;
-    position: absolute;
+	width: 36px;
+	height: 36px;
+	position: absolute;
 }
 
 #chat {
-    text-align: left;
-    overflow: auto;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 25%;
-    height: 25%;
-    background: #000;
+	text-align: left;
+	overflow: auto;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 25%;
+	height: 25%;
+	background: #000;
 }
 
 #sendChatMsg {
-    background: #222;
-    color: #fff;
-    position: fixed;
-    top: 25%;
-    left: 0;
-    border-radius: 0;
-    width: 24.8%;
+	background: #222;
+	color: #fff;
+	position: fixed;
+	top: 25%;
+	left: 0;
+	border-radius: 0;
+	width: 24.8%;
 }
 
 #newDayScreen {
-    background: #000;
-    width: 100vw;
-    height: 100vh;
-    z-index: 100;
-    position: absolute;
-    top: 0;
-    left: 0;
-    opacity: 0;
-    pointer-events: none;
-    display: table;
-    transition: opacity 1s;
+	background: #000;
+	width: 100vw;
+	height: 100vh;
+	z-index: 100;
+	position: absolute;
+	top: 0;
+	left: 0;
+	opacity: 0;
+	pointer-events: none;
+	display: table;
+	transition: opacity 1s;
 }
 
 #newDayScreen > span {
-    font-size: 10vh;
-    display: table-cell;
-    vertical-align: middle;
+	font-size: 10vh;
+	display: table-cell;
+	vertical-align: middle;
 }

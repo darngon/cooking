@@ -61,7 +61,7 @@ let otherUpgrades = {
     godTier: [
         {
             condition: true,
-            text: "'Every Modifier ^2'",
+            text: "'Every Modifier ^2 Effectiveness'",
             effect: "for (const i in modifiers) if (typeof modifiers[i] === 'number' && i !== 'maxUpgrades') modifiers[i] **= 2;"
         }
     ]

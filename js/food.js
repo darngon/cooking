@@ -1,5 +1,5 @@
 class food {
-    constructor(id, isCustom, cookSpeed, cooked, mass, volume, temp, name, liquids, ingredients) {
+    constructor(id, isCustom, cookSpeed, cooked, mass, volume, temp, name, liquids, ingredients, amount) {
         this.id = id;
         if (typeof id === "object") isCustom = true;
         this.custom = isCustom !== undefined ? isCustom : false;
@@ -13,7 +13,8 @@ class food {
         this.cookSpeed = cookSpeed;
         this.liquids = liquids !== undefined ? liquids : [];
         this.ingredients = ingredients;
-        this.amount = 1;
+        this.amount = amount !== undefined ? amount : 1;
+		this.age = 0;
         if (!this.custom) this.group = foods[id].group;
         if (!this.custom) this.cookSpeed = foods[id].cookSpeed !== undefined ? foods[id].cookSpeed : 1;
         if (typeof id === "object") {
@@ -23,6 +24,9 @@ class food {
     }
 
     format() {
+		if (isNaN(this.mass)) this.mass = undefined;
+		if (isNaN(this.volume)) this.volume = undefined;
+
         let output = "";
         if (this.temp < 1500) {
             this.hue = 0;

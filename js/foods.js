@@ -1,6 +1,7 @@
 // noinspection SpellCheckingInspection
 
 let foods = {
+	// basic ingredients
     almond: {name: "Almond", group: "Nuts", mass: 1.5, price: 0.05, imgAvailable: true},
     anchovy: {name: "Anchovy", group: "Seafood", mass: 40, price: 2},
     apple: {name: "Apple", group: "Fruits", mass: 200, price: 1},
@@ -133,6 +134,7 @@ let foods = {
     ziti: {name: "Ziti", group: "Pasta", mass: 2, price: 0.03},
     zucchini: {name: "Zucchini", group: "Vegetables", mass: 200, price: 1},
 
+	// liquids
     almondMilk: {name: "Almond Milk", group: "Liquids", volume: 500, price: 5},
     avocadoOil: {name: "Avocado Oil", group: "Oils", volume: 1000, price: 3},
     balsamicVinegar: {name: "Balsamic Vinegar", group: "Liquids", volume: 1000, price: 5},
@@ -180,6 +182,7 @@ let foods = {
     whiteWine: {name: "White Wine", group: "Liquids", volume: 1000, price: 8},
     wineVinegar: {name: "Wine Vinegar", group: "Liquids", volume: 1000, price: 5},
 
+	// money
     check: {name: "Check", group: "Money", mass: 1, price: 1, unavailable: true},
     penny: {name: "Penny", group: "Money", mass: 1, price: 0.01},
     nickel: {name: "Nickel", group: "Money", mass: 1, price: 0.05},

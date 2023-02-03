@@ -1,6 +1,6 @@
 // noinspection DuplicatedCode
 
-const ws = new WebSocket("wss://localhost:9928");
+const ws = new WebSocket("wss://10.214.148.236:9928");
 
 let SERVER_ID;
 let username;
@@ -191,11 +191,17 @@ function hostServer() {
     username = prompt("Username?");
 }
 
-ws.onopen = () => {
+ws.addEventListener("open", () => {
     debug.websocketFailed = false;
     ws.onmessage = m => {
-        console.log(m);
-        m = JSON.parse(m.data);
+        try {
+			m = JSON.parse(m.data);
+			console.log(`Received ${m.type} from ${m.id}`)
+		} catch (e) {
+			console.log(`Failed to parse ${m.data} as JSON`);
+			return;
+		}
+
         if (SERVER_ID === m.id) {
             if (m.type === "log") {
                 console.log(m.value);
@@ -218,7 +224,7 @@ ws.onopen = () => {
     };
     console.log("%cConnected", "color: #0f0");
     ws.send(JSON.stringify({type: "log", value: "New user connected"}));
-}
+});
 
 ws.onerror = () => {
     debug.websocketFailed = true;
